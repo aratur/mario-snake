@@ -1,13 +1,14 @@
-import React, { useEffect, useCallback, useState } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import './App.css';
 import { useDispatch } from 'react-redux';
-import { coputeStateThunk } from './store/store';
+import { coputeStateThunk, resetState } from './store/store';
 import { useTypedSelector } from './store/TypedUtils';
-import { reset, columns, rows } from './store/gridSlice';
+import { columns, rows } from './model/ColumnsAndRows';
 import {
-  changeDirection, getLevel
-  , getIsRunning, setIsRunning } from './store/snakeSlice';
+  changeDirection, getLevel, setIsRestarting, getIsRestarting,
+  getIsRunning, setIsRunning } from './store/snakeSlice';
 import Box from './Box';
+import Lives from './Lives';
 
 function App() {
 
@@ -33,31 +34,31 @@ function App() {
         break;
       case('Escape'):
         dispatch(setIsRunning(false));
+        dispatch(setIsRestarting(true));
         break;
       default:
         console.log(event.key);
     }
   }, [dispatch])
 
-  const isRunning = useTypedSelector(getIsRunning)
-  const [isRestarting, setIsRestarting] = useState(true);
+  const isRunning = useTypedSelector(getIsRunning);
+  const isRestarting = useTypedSelector(getIsRestarting);
 
   useEffect(() => {
-    if (isRestarting) {
-      dispatch(reset());
-      setIsRestarting(false);
+    if (isRestarting){
+      dispatch(resetState());
     }
     // https://evanshortiss.com/timers-in-typescript
     let cleanup: NodeJS.Timer | undefined;
     if (isRunning){
-      cleanup = setInterval(() => dispatch(coputeStateThunk()), 1000/level)
+      cleanup = setInterval(() => dispatch(coputeStateThunk()), 500/level)
     }
     document.addEventListener('keydown', handleKeyDown);
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
       if (cleanup) clearInterval(cleanup);
     }
-  }, [dispatch, handleKeyDown, isRunning, isRestarting, level]);
+  }, [dispatch, handleKeyDown, isRunning, level, isRestarting]);
 
 
 
@@ -67,7 +68,7 @@ function App() {
       dispatch(changeDirection(pressed.value));
     if (pressed.value === 'Stop') {
       dispatch(setIsRunning(false));
-      setIsRestarting(true);
+      dispatch(setIsRestarting(true));
     }
     if (pressed.value === 'Start') dispatch(setIsRunning(true));
   }
@@ -89,15 +90,16 @@ function App() {
   return (
     <div className="container">
       <div className="App">
-        <div className="row" >
-          <div className="col-sm-10"  >
+        <div className="row">
+          <div className="col-sm-10">
             <table>
               <tbody>
+                <Lives />
             {renderBoxes()}
               </tbody>
             </table>
           </div>
-          <div className="col-sm-2">
+          <div className="col-sm-2" >
             {button('Start')}
             {button('Stop')}
             <br />

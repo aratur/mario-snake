@@ -4,22 +4,10 @@ import {
   createSlice, PayloadAction,
 } from '@reduxjs/toolkit';
 import { RootState } from './store';
-
-const numberOfColumns = 20;
-const numberOfRows = 20;
-export const columns: Array<number> = Array(numberOfColumns)
-  .fill(0).map((_, index) => index + 1);
-export const rows: Array<number> = Array(numberOfColumns)
-  .fill(0).map((_, index) => index + 1);
-
-export type Grid = {
-  column: number,
-  row: number,
-  isSnake: boolean,
-  isHead: boolean,
-  isTail: boolean,
-  isWall: boolean,
-}
+import Grid from '../model/Grid';
+import Coordinates from '../model/Coordinates';
+import { columns, rows,
+  numberOfRows, numberOfColumns } from '../model/ColumnsAndRows';
 
 const gridAdapter = createEntityAdapter<Grid>({
   selectId: (item) => item.column * 100 + item.row,
@@ -37,6 +25,8 @@ const createGrid = (state: GridState) => {
         isSnake: false,
         isHead: false,
         isTail: false,
+        isPrize: false,
+        isBrick: true,
         isWall: row - 1 === 0 || column - 1 === 0
           || row === numberOfRows || column === numberOfColumns,
       });
@@ -44,17 +34,17 @@ const createGrid = (state: GridState) => {
   });
 };
 
-const id = (input: {column: number, row: number}) => input.column*100 + input.row;
+const id = (input: Coordinates) => input.column*100 + input.row;
 
 const gridSlice = createSlice({
   name: 'grid',
   initialState: gridState,
   reducers: {
-    reset: (state) => {
+    gridReset: (state) => {
       gridAdapter.removeAll(state);
       createGrid(state);
     },
-    updateHead: (state, action: PayloadAction<{column: number, row: number}>) => {
+    updateHead: (state, action: PayloadAction<Coordinates>) => {
       const oldHeadId = state.ids.find(id => state.entities[id]?.isHead)
       if (oldHeadId){
         const oldHeadEntity = state.entities[oldHeadId];
@@ -64,11 +54,13 @@ const gridSlice = createSlice({
         }
       }
       const newHeadId = id(action.payload);
-      console.log(newHeadId + " newHeadId")
       const newHeadEntity = state.entities[newHeadId];
-      if (newHeadEntity) newHeadEntity.isHead = true;
+      if (newHeadEntity) {
+        newHeadEntity.isHead = true;
+        newHeadEntity.isBrick = false;
+      };
     },
-    updateTail: (state, action: PayloadAction<{column: number, row: number}>) => {
+    updateTail: (state, action: PayloadAction<Coordinates>) => {
       const oldTailId = state.ids.find(id => state.entities[id]?.isTail)
       if (oldTailId){
         const oldTailEntity = state.entities[oldTailId];
@@ -77,11 +69,22 @@ const gridSlice = createSlice({
         }
       }
       const newTailId = id(action.payload);
-      console.log(newTailId + " newTailId")
       const newTailEntity = state.entities[newTailId];
       if (newTailEntity) {
         newTailEntity.isTail = true;
         newTailEntity.isSnake = false;
+      }
+    },
+    updatePrize: (state, action: PayloadAction<Coordinates>) => {
+      const oldPrizeId = state.ids.find(id => state.entities[id]?.isPrize)
+      if (oldPrizeId){
+        const oldPrizeEntity = state.entities[oldPrizeId];
+        if (oldPrizeEntity) oldPrizeEntity.isPrize = false;
+      }
+      const newPrizeId = id(action.payload);
+      const newPrizeEntity = state.entities[newPrizeId];
+      if (newPrizeEntity) {
+        newPrizeEntity.isPrize = true;
       }
     },
   },
@@ -94,5 +97,6 @@ const gridSelectors = gridAdapter.getSelectors<RootState>(
 export const selectById = (
     state: RootState, column: number, row: number
   ) => gridSelectors.selectById(state, column * 100 + row);
-export const { updateHead, updateTail, reset } = gridSlice.actions;
+export const { updateHead, updateTail,
+  updatePrize, gridReset } = gridSlice.actions;
 export default gridSlice.reducer;

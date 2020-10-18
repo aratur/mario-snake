@@ -1,7 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit';
-import gridReducer, { Grid, updateHead, updateTail } from './gridSlice';
+import gridReducer, {
+  updateHead, updateTail, updatePrize, gridReset } from './gridSlice';
 import snakeReducer,
-  { getSnakeHead, getSnakeTail, move } from './snakeSlice';
+  { getSnakeHead, getSnakeTail, setIsRestarting,
+    move, snakeReset } from './snakeSlice';
 
 const store = configureStore({
   reducer: {
@@ -18,12 +20,24 @@ export type RootState = ReturnType<typeof store.getState>
 export const coputeStateThunk = () => {
   return (dispatch: DispatchType, getState: GetStoreType) => {
     const oldHead = getSnakeHead(getState());
-    const oldTail = getSnakeTail(getState());
     dispatch(move());
     const newHead = getSnakeHead(getState());
     const newTail = getSnakeTail(getState());
-    dispatch(updateHead(newHead));
-    dispatch(updateTail(newTail));
+    if (oldHead !== newHead) {
+      dispatch(updateHead(newHead));
+      dispatch(updateTail(newTail));
+      dispatch(updatePrize(getState().snake.prize));
+    }
+  }
+}
+
+export const resetState = () => {
+  return (dispatch: DispatchType, getState: GetStoreType) => {
+    if (getState().snake.isRestarting) {
+      dispatch(snakeReset());
+      dispatch(gridReset());
+      dispatch(setIsRestarting(false));
+    }
   }
 }
 
