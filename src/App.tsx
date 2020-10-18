@@ -82,7 +82,7 @@ function App() {
 
   const renderBoxes = () => rows
     .map((row) => (
-      <tr key={ 'row.' + String(row) }>
+      <tr key={'row.' + String(row) }>
       {columns.map((column) => <Box column={column} row={row} key={ String(column * 100 +row) }/>)}
       </tr>
     ));

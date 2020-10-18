@@ -9,13 +9,12 @@ import directions from '../model/Directions';
 const initialDirection: Coordinates = directions.Right;
 const initialBody: Array<Coordinates> = [
   { column: 2, row: 2 },
-  { column: 3, row: 2 },
 ];
 const initialLevel = 4;
 const initialIsRunning = false;
 const initialIsRestarting = true;
 const initialNoOfLives = 3;
-const initialSnakeLength = 5;
+const initialSnakeLength = 15;
 const getRandomNumberFromTo = (from: number, to: number) => {
   return Math.round(Math.random() * (to - from) + from);
 }
@@ -55,8 +54,7 @@ const resetState = (state: SnakeState) => {
   state.level = initialLevel;
   state.isRunning = initialIsRunning;
   state.prize = getPrize(initialBody);
-  state.lives = initialNoOfLives;
-  state.snakeLength = initialSnakeLength;
+  state.lives = initialNoOfLives
 }
 
 const isNotPartOfTheWall = (newCoordinates: Coordinates) =>
@@ -95,18 +93,23 @@ const snakeSlice = createSlice({
         column: oldHead.column + state.direction.column,
         row: oldHead.row + state.direction.row
       };
-      if (isNotPartOfTheWall(newHead)) {
-          state.body.push(newHead);
-          state.body.shift();
+      if (isNotPartOfTheWall(newHead)
+        && !isPartOfTheBody(newHead, state.body)) {
+          if (state.body.length < state.snakeLength) {
+            state.body.push(newHead);
+          } else if (newHead.column === state.prize.column
+            && newHead.row === state.prize.row ){
+            state.body.push(newHead);
+            state.prize = getPrize(state.body);
+          } else {
+            state.body.push(newHead);
+            state.body.shift();
+          }
       } else {
         console.log("Snake outside of bounds" + newHead.column + "." + newHead.row);
+        state.snakeLength = state.lives > 0 ? state.body.length : initialSnakeLength;
         state.isRestarting = true;
         state.isRunning = false;
-      }
-      if (newHead.column === state.prize.column
-        && newHead.row === state.prize.row){
-        state.body.push(newHead);
-        state.prize = getPrize(state.body);
       }
     },
     setIsRunning: (state, action: PayloadAction<boolean>) => {

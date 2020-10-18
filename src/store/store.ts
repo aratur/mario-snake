@@ -20,12 +20,14 @@ export type RootState = ReturnType<typeof store.getState>
 export const coputeStateThunk = () => {
   return (dispatch: DispatchType, getState: GetStoreType) => {
     const oldHead = getSnakeHead(getState());
+    const oldTail = getSnakeTail(getState());
+    const oldPrize = getState().snake.prize;
     dispatch(move());
-    const newHead = getSnakeHead(getState());
     const newTail = getSnakeTail(getState());
-    if (oldHead !== newHead) {
-      dispatch(updateHead(newHead));
-      dispatch(updateTail(newTail));
+    const newHead = getSnakeHead(getState());
+    if (oldTail !== newTail) dispatch(updateTail(newTail));
+    if (oldHead !== newHead) dispatch(updateHead(newHead));
+    if (oldPrize !== getState().snake.prize) {
       dispatch(updatePrize(getState().snake.prize));
     }
   }

@@ -10,7 +10,13 @@ module.exports = {
     'plugin:testing-library/recommended',
     'plugin:jest-dom/recommended',
     'airbnb',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:@typescript-eslint/recommended-requiring-type-checking',
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:@typescript-eslint/eslint-recommended",
   ],
+  parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaFeatures: {
       jsx: true,
@@ -22,9 +28,11 @@ module.exports = {
     'react',
     'testing-library',
     'jest-dom',
+    '@typescript-eslint',
   ],
   rules: {
-    'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }],
+    "@typescript-eslint/rule-name": "error",
+    'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx', '.tsx', '.ts'] }],
     'no-console': 'off',
     'no-plusplus': ['error', { 'allowForLoopAfterthoughts': true }],
   },
