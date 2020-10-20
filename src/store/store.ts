@@ -3,7 +3,8 @@ import gridReducer, {
   updateHead, updateTail, updatePrize, gridReset } from './gridSlice';
 import snakeReducer,
   { getSnakeHead, getSnakeTail, setIsRestarting,
-    move, snakeReset } from './snakeSlice';
+    move, snakeReset, getBricks } from './snakeSlice';
+import Coordinates from '../model/Coordinates';
 
 const store = configureStore({
   reducer: {
@@ -19,11 +20,11 @@ export type RootState = ReturnType<typeof store.getState>
 
 export const coputeStateThunk = () => {
   return (dispatch: DispatchType, getState: GetStoreType) => {
-    const oldHead = getSnakeHead(getState());
-    const oldTail = getSnakeTail(getState());
-    const oldPrize = getState().snake.prize;
+    const oldHead: Coordinates = getSnakeHead(getState());
+    const oldTail: Coordinates = getSnakeTail(getState());
+    const oldPrize: Coordinates = getState().snake.previousPrize;
     dispatch(move());
-    const newTail = getSnakeTail(getState());
+    const newTail: Coordinates = getSnakeTail(getState());
     const newHead = getSnakeHead(getState());
     if (oldTail !== newTail) dispatch(updateTail(newTail));
     if (oldHead !== newHead) dispatch(updateHead(newHead));
@@ -37,7 +38,8 @@ export const resetState = () => {
   return (dispatch: DispatchType, getState: GetStoreType) => {
     if (getState().snake.isRestarting) {
       dispatch(snakeReset());
-      dispatch(gridReset());
+      const bricks = getBricks(getState());
+      dispatch(gridReset(bricks));
       dispatch(setIsRestarting(false));
     }
   }

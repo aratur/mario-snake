@@ -34,7 +34,8 @@
      inkscape:window-height="1016"
      inkscape:window-x="1984"
      inkscape:window-y="581"
-     inkscape:window-maximized="1" />
+     inkscape:window-maximized="1"
+     inkscape:pagecheckerboard="true" />
   <metadata
      id="metadata5">
     <rdf:RDF>
@@ -51,13 +52,6 @@
      inkscape:label="Warstwa 1"
      inkscape:groupmode="layer"
      id="layer1">
-    <rect
-       style="fill:#009bed;fill-opacity:1;stroke-width:0.264583"
-       id="rect1195"
-       width="19"
-       height="19"
-       x="0.022952162"
-       y="-0.0030484616" />
     <g
        id="g1179"
        transform="translate(8.430922,2.0164533)">

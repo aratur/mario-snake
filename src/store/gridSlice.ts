@@ -16,7 +16,11 @@ const gridAdapter = createEntityAdapter<Grid>({
 const gridState = gridAdapter.getInitialState();
 type GridState = typeof gridState;
 
-const createGrid = (state: GridState) => {
+export const isPartOfSpace = (newCoordinates: Coordinates, body: Array<Coordinates>) =>
+  body.findIndex(value => value.column === newCoordinates.column
+    && value.row === newCoordinates.row) > -1 ? true : false;
+
+const createGrid = (state: GridState, bricks: Array<Coordinates>) => {
   columns.forEach((column) => {
     rows.forEach((row) => {
       gridAdapter.addOne(state, {
@@ -26,7 +30,7 @@ const createGrid = (state: GridState) => {
         isHead: false,
         isTail: false,
         isPrize: false,
-        isBrick: true,
+        isBrick: !isPartOfSpace({column, row}, bricks),
         isWall: row - 1 === 0 || column - 1 === 0
           || row === numberOfRows || column === numberOfColumns,
       });
@@ -40,9 +44,9 @@ const gridSlice = createSlice({
   name: 'grid',
   initialState: gridState,
   reducers: {
-    gridReset: (state) => {
+    gridReset: (state, action: PayloadAction<Array<Coordinates>>) => {
       gridAdapter.removeAll(state);
-      createGrid(state);
+      createGrid(state, action.payload);
     },
     updateHead: (state, action: PayloadAction<Coordinates>) => {
       const oldHeadId = state.ids.find(id => state.entities[id]?.isHead)
