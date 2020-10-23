@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTypedSelector } from './store/TypedUtils';
 import { getNoOfPoints } from './store/snakeSlice';
-import coin from './img/mario-coin.svg';
+import coin from './img/mario-coin.png';
 import i0 from './img/0.png';
 import i1 from './img/1.png';
 import i2 from './img/2.png';

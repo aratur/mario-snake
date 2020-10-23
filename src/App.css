@@ -3,8 +3,7 @@ table {
 }
 
 td {
-  width: 25px;
-  height: 25px;
+  line-height: 1rem;
   padding: 0px;
   white-space: nowrap;
   text-align: center;
@@ -15,4 +14,39 @@ img.points {
   padding: 3px;
   height: 25px;
   width: 25px;
+}
+
+img.board {
+  height: 25px;
+  width: 25px;
+}
+
+img.navigation {
+  height: 40px;
+  width: 40px;
+}
+img.navigation:hover {
+  background-color: #F6F4F1;
+}
+img.navigation:active {
+  background-color: #F11111;
+}
+
+img.fireball {
+  padding: 0px;
+  margin: 16px;
+  height: 16px;
+  width: 16px;
+}
+
+button.navigation {
+  border: none;
+  padding: 0px;
+  height: 40px;
+  width: 40px;
+  background-color: rgba(255, 0, 0, 0.0);
+}
+
+div.w3-container {
+  padding: 0px;
 }
