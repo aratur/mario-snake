@@ -22,6 +22,7 @@ img.board {
 }
 
 img.navigation {
+
   height: 40px;
   width: 40px;
 }
@@ -34,12 +35,13 @@ img.navigation:active {
 
 img.fireball {
   padding: 0px;
-  margin: 16px;
+  margin: 14px;
   height: 16px;
   width: 16px;
 }
 
 button.navigation {
+  margin: 2px;
   border: none;
   padding: 0px;
   height: 40px;

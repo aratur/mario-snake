@@ -6,15 +6,22 @@ import arrowRight from './img/arrow-right.svg';
 import play from './img/play.svg';
 import pause from './img/pause.svg';
 import fireball from './img/fireball.png';
+import slowerImg from './img/slower.png';
+import fasterImg from './img/faster.png';
 
 type Props = {
   start: () => void,
   stop: () => void,
   isRunning: boolean,
-  changeDirection: (direction: string) => void
+  changeDirection: (direction: string) => void,
+  faster: () => void,
+  slower: () => void,
+  level: number,
 };
 
-const Navigation = ( { start, stop, isRunning, changeDirection } : Props) => {
+const Navigation = ( {
+    start, stop, isRunning, changeDirection, faster, slower, level,
+  } : Props) => {
   const handleButtonClicked = (event: React.MouseEvent<HTMLButtonElement>) => {
     const pressed = event.target as HTMLElement;
     let name = "unknown";
@@ -23,14 +30,19 @@ const Navigation = ( { start, stop, isRunning, changeDirection } : Props) => {
     } else {
       name = (event.target as HTMLButtonElement).value;
     }
-    if (['Left','Right','Up','Down'].includes(name))
-      changeDirection(name);
-    if (name === 'Stop') stop();
-    if (name === 'Start') start();
+
+    switch(name) {
+      case 'Stop': stop(); break;
+      case 'Start': start(); break;
+      case 'Slower': slower(); break;
+      case 'Faster': faster(); break;
+
+      default: if (['Left','Right','Up','Down'].includes(name))
+        changeDirection(name);
+    }
   }
 
   const handleImageClicked = () => {};
-
   const getImage = (name: string) => {
     switch(name) {
       case 'Up': return arrowUp;
@@ -39,6 +51,8 @@ const Navigation = ( { start, stop, isRunning, changeDirection } : Props) => {
       case 'Right': return arrowRight;
       case 'Stop': return pause;
       case 'Start': return play;
+      case 'Faster': return fasterImg;
+      case 'Slower': return slowerImg;
       default: return play;
     }
   }
@@ -55,6 +69,10 @@ const Navigation = ( { start, stop, isRunning, changeDirection } : Props) => {
           className="navigation"
           src={getImage(name)}
           alt={name}
+          style={(('Slower' === name && level === 1)
+          || ('Faster' === name && level === 10))
+            ? { visibility: 'hidden'}
+            : {}}
         />
       </button>
   }
@@ -63,7 +81,9 @@ const Navigation = ( { start, stop, isRunning, changeDirection } : Props) => {
   <>
     <div className="w3-cell-row" >
       <div className="w3-cell w3-cell-middle w3-hide-large w3-hide-medium">
+        {button('Slower')}
         {isRunning ? button('Stop') : button('Start')}
+        {button('Faster')}
       </div>
       <div className="w3-cell w3-cell-middle">
           {button('Up')}
@@ -77,7 +97,9 @@ const Navigation = ( { start, stop, isRunning, changeDirection } : Props) => {
     </div>
     <div className="w3-cell-row w3-center w3-padding-16">
       <div className="w3-cell w3-hide-small">
+        {button('Slower')}
         {isRunning ? button('Stop') : button('Start')}
+        {button('Faster')}
       </div>
     </div>
   </>

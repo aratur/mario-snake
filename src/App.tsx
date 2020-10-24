@@ -5,8 +5,9 @@ import { coputeStateThunk, resetState } from './store/store';
 import { useTypedSelector } from './store/TypedUtils';
 import { columns, rows } from './model/ColumnsAndRows';
 import {
-  changeDirection, getLevel, getIsRestarting,
-  getIsRunning, setIsRunning } from './store/snakeSlice';
+  changeDirection, getLevel,
+  getWasKilled, levelUp, levelDown,
+  } from './store/snakeSlice';
 import Box from './Box';
 import StatusBar from './StatusBar';
 import Navigation from './Navigation';
@@ -15,14 +16,28 @@ function App() {
 
   const dispatch = useDispatch();
   const level = useTypedSelector(getLevel);
+  const wasKilled = useTypedSelector(getWasKilled);
+  const [isRunning, setIsRunning] = useState(false);
+  const [componentDidMount, setComponentDidMount] = useState(true);
 
-  const dispatchStart = useCallback(() => {
-    dispatch(setIsRunning(true));
-  }, [dispatch]);
+  const dispatchStart = useCallback(():void => {
+    console.log("dispatchStart", wasKilled);
+    if (wasKilled) {
+      // dispatch(setWasKilled(false));
+      dispatch(resetState());
+    }
+      setIsRunning(true);
+  }, [dispatch, wasKilled]);
 
-  const dispatchStop = useCallback(() => {
-    dispatch(setIsRunning(false));
+  const stop = useCallback(():void => {
+    setIsRunning(false);
   }, [dispatch]);
+  const faster = ():void => {
+    dispatch(levelUp());
+  }
+  const slower = ():void => {
+    dispatch(levelDown());
+  }
 
   const dispatchChangeDirection = useCallback((direction: string) =>{
     if (['Left','Right','Up','Down'].includes(direction))
@@ -43,33 +58,33 @@ function App() {
       case('ArrowDown'): dispatchChangeDirection('Down');
         break;
       case('Enter'): dispatchStart(); break;
-      case('Escape'): dispatchStop (); break;
+      case('Escape'): stop (); break;
       default: console.log(event.key);
     }
-  }, [dispatchChangeDirection, dispatchStart, dispatchStop])
-
-  const isRunning = useTypedSelector(getIsRunning);
-  const isRestarting = useTypedSelector(getIsRestarting);
-  const [componentDidMount, setComponentDidMount] = useState(true);
+  }, [dispatchChangeDirection, dispatchStart, stop])
 
   useEffect(() => {
+    console.log("useEffect", isRunning, wasKilled);
+    let cleanup: NodeJS.Timer | undefined;
     if (componentDidMount) {
       dispatch(resetState());
       setComponentDidMount(false);
-    } else if (isRestarting){
-      dispatch(resetState());
+    } else if (wasKilled && isRunning){
+      console.log("useEffect Stop")
+      stop();
+    } else if (isRunning){
+      // https://evanshortiss.com/timers-in-typescript
+      cleanup = setInterval(() => dispatch(coputeStateThunk()), 1000/level);
     }
-    // https://evanshortiss.com/timers-in-typescript
-    let cleanup: NodeJS.Timer | undefined;
-    if (isRunning){
-      cleanup = setInterval(() => dispatch(coputeStateThunk()), 500/level)
-    }
+
     document.addEventListener('keydown', handleKeyDown);
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
       if (cleanup) clearInterval(cleanup);
     }
-  }, [dispatch, handleKeyDown, isRunning, level, isRestarting, componentDidMount]);
+  }, [dispatch, handleKeyDown, stop,
+    wasKilled
+    , isRunning, level, componentDidMount]);
 
   const renderBoxes = () => rows
     .map((row) => (
@@ -85,7 +100,15 @@ function App() {
   return <div className="w3-container">
     <div className="w3-cell-row">
       <div className="w3-cell w3-margin-top w3-center w3-mobile w3-hide-small w3-cell-middle" >
-        <Navigation start={dispatchStart} stop={dispatchStop} isRunning={isRunning} changeDirection={dispatchChangeDirection}/>
+      <Navigation
+        start={dispatchStart}
+        stop={stop}
+        isRunning={isRunning}
+        changeDirection={dispatchChangeDirection}
+        faster={faster}
+        slower={slower}
+        level={level}
+      />
       </div>
       <div className="w3-cell w3-mobile w3-center">
         <table className="w3-content">
@@ -96,7 +119,15 @@ function App() {
         </table>
         </div>
         <div className="w3-cell w3-margin-top w3-center w3-mobile w3-cell-middle" >
-          <Navigation start={dispatchStart} stop={dispatchStop} isRunning={isRunning} changeDirection={dispatchChangeDirection}/>
+          <Navigation
+            start={dispatchStart}
+            stop={stop}
+            isRunning={isRunning}
+            changeDirection={dispatchChangeDirection}
+            faster={faster}
+            slower={slower}
+            level={level}
+          />
         </div>
       </div>
     </div>

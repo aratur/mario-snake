@@ -10,9 +10,7 @@ const initialDirection: Coordinates = directions.Right;
 const initialBody: Array<Coordinates> = [
   { column: 2, row: 2 },
 ];
-const initialLevel = 4;
-const initialIsRunning = false;
-const initialIsRestarting = true;
+const initialLevel = 5;
 const initialNoOfLives = 3;
 const initialSnakeLength = 5;
 const getRandomNumberFromTo = (from: number, to: number) => {
@@ -39,20 +37,20 @@ const getPrize = (body: Array<Coordinates>, oldPrize: Coordinates) => {
 const initialPrize: Coordinates = { column: 0, row: 0 };
 const initialPoints: number = 0;
 const initialBrics: Array<Coordinates> = [];
+const initialWasKilled: boolean = false;
 
 const initialState = {
   body: initialBody,
   direction: initialDirection,
   previousDirection: initialDirection,
   level: initialLevel,
-  isRunning: initialIsRunning,
-  isRestarting: initialIsRestarting,
   previousPrize: initialPrize,
   prize: getPrize(initialBody, initialPrize),
   lives: initialNoOfLives,
   points: initialPoints,
   snakeLength: initialSnakeLength,
   bricks: initialBrics,
+  wasKilled: initialWasKilled,
 };
 type SnakeState = typeof initialState;
 
@@ -60,15 +58,13 @@ const resetState = (state: SnakeState) => {
   state.body = initialBody;
   state.direction = initialDirection;
   state.previousDirection = initialDirection;
-  state.level = initialLevel;
-  state.isRunning = initialIsRunning;
-  state.previousPrize = state.prize;
   state.prize = getPrize(initialBody, state.prize);
-  if (state.lives === 0) {
-    state.lives = initialNoOfLives;
-    state.points = initialPoints;
-    state.snakeLength = initialSnakeLength;
-    state.bricks = initialBrics;
+  state.wasKilled = initialWasKilled;
+  if (state.lives === 0){
+      state.lives = initialNoOfLives;
+      state.points = initialPoints;
+      state.snakeLength = initialSnakeLength;
+      state.bricks = initialBrics;
   }
 }
 
@@ -92,10 +88,14 @@ const snakeSlice = createSlice({
         }
     },
     levelUp: (state) => {
-      if (state.level < 10) state.level += 1;
+      if (state.level < 10) {
+        state.level += 1;
+      }
     },
     levelDown: (state) => {
-      if (state.level > 1) state.level += -1;
+      if (state.level > 1) {
+        state.level -= 1;
+      }
     },
     snakeReset: (state) => {
       resetState(state);
@@ -121,45 +121,41 @@ const snakeSlice = createSlice({
             && newHead.row === state.prize.row ){
             state.points += 25;
             state.body.push(newHead);
-            state.previousPrize = state.prize;
             state.prize = getPrize(state.body, state.prize);
           } else if (state.bricks.length === (numberOfRows - 2) * (numberOfColumns - 2)){
               state.bricks = initialBrics;
-              state.isRestarting = true;
-              state.isRunning = false;
+              state.wasKilled = true;
               state.body.push(newHead);
               state.body.shift();
           } else {
             state.body.push(newHead);
             state.body.shift();
           }
-
       } else {
         state.snakeLength = state.lives > 0 ? state.body.length : initialSnakeLength;
         if (state.lives > 0) state.lives -= 1;
-        state.isRestarting = true;
-        state.isRunning = false;
+        state.wasKilled = true;
       }
     },
-    setIsRunning: (state, action: PayloadAction<boolean>) => {
-      state.isRunning = action.payload;
+    setWasKilled: (state, action: PayloadAction<boolean>) => {
+      state.wasKilled = action.payload;
     },
-    setIsRestarting: (state, action: PayloadAction<boolean>) => {
-      state.isRestarting = action.payload;
+    setPreviousPrize: (state, action: PayloadAction<Coordinates>) => {
+      state.previousPrize = action.payload;
     }
   },
 });
 
+export const getWasKilled = (state: RootState) => state.snake.wasKilled;
 export const getBricks = (state: RootState) => state.snake.bricks;
 export const getNoOfPoints = (state: RootState) => state.snake.points;
 export const getNoOfLives = (state: RootState) => state.snake.lives;
-export const getIsRestarting = (state: RootState) => state.snake.isRestarting;
-export const getIsRunning = (state: RootState) => state.snake.isRunning;
 export const getSnakeHead = (state: RootState) => state.snake.body[state.snake.body.length-1];
 export const getSnakeTail = (state: RootState) => state.snake.body[0];
 export const getLevel = (state: RootState) => state.snake.level;
 export const {
   changeDirection, levelUp, snakeReset,
-  levelDown, setIsRestarting, setIsRunning,
-  move } = snakeSlice.actions;
+  setPreviousPrize, setWasKilled,
+  levelDown,
+  move, } = snakeSlice.actions;
 export default snakeSlice.reducer;

@@ -6,8 +6,8 @@ import Coordinates from './model/Coordinates';
 import wall from './img/mario-wall.png';
 import bricks from './img/mario-bricks.png';
 import coin from './img/mario-coin.png';
-import head from './img/mario-head-s.png';
-import body from './img/silver-body-i.png';
+import head from './img/mario.png';
+import body from './img/silver-body-g.png';
 
 const Box = ({ column, row }: Coordinates) => {
   const gridItem: Grid | undefined = useTypedSelector(state => selectById(state, column, row));
