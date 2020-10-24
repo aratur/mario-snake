@@ -3,7 +3,7 @@ import arrowUp from './img/arrow-up.svg';
 import arrowDown from './img/arrow-down.svg';
 import arrowLeft from './img/arrow-left.svg';
 import arrowRight from './img/arrow-right.svg';
-import play from './img/play.svg';
+import play from './img/play.png';
 import pause from './img/pause.svg';
 import fireball from './img/fireball.png';
 import slowerImg from './img/slower.png';
