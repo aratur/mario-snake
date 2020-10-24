@@ -31,7 +31,8 @@ function App() {
 
   const stop = useCallback(():void => {
     setIsRunning(false);
-  }, [dispatch]);
+  }, []);
+
   const faster = ():void => {
     dispatch(levelUp());
   }
