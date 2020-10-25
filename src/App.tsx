@@ -1,32 +1,34 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import './App.css';
 import { useDispatch } from 'react-redux';
-import { resetState } from './store/store';
+import { resetStateThunk } from './store/store';
 import { useTypedSelector } from './store/TypedUtils';
 import {
   changeDirection, getLevel,
   getWasKilled,
   } from './store/snakeSlice';
+import { getNumberOfRows, getNumberOfColumns } from './store/columnsAndRowsSlice';
 import Bricks from './Bricks';
 import StatusBar from './StatusBar';
 import Navigation from './Navigation';
 import MoveOnInterval from './MoveOnInterval';
 import ResizeHandler from './ResizeHandler';
 import KeyboardControlls from './KeyboardControlls';
-import { columns, rows } from './model/ColumnsAndRows';
 
 function App() {
 
   const dispatch = useDispatch();
   const level = useTypedSelector(getLevel);
   const wasKilled = useTypedSelector(getWasKilled);
+  const numberOfRows = useTypedSelector(getNumberOfRows);
+  const numberOfColumns = useTypedSelector(getNumberOfColumns);
   const [isRunning, setIsRunning] = useState(false);
   const [componentDidMount, setComponentDidMount] = useState(true);
 
   const dispatchStart = useCallback(():void => {
     console.log("dispatchStart", wasKilled);
     if (wasKilled) {
-      dispatch(resetState());
+      dispatch(resetStateThunk());
     }
       setIsRunning(true);
   }, [dispatch, wasKilled]);
@@ -37,7 +39,7 @@ function App() {
 
   useEffect(() => {
     if (componentDidMount) {
-      dispatch(resetState());
+      dispatch(resetStateThunk());
       setComponentDidMount(false);
     } else if (wasKilled && isRunning){
       stop();
@@ -61,8 +63,8 @@ function App() {
       <div className="w3-cell w3-mobile w3-center">
         <table className="w3-content">
           <tbody>
-            <StatusBar />
-            <Bricks columns={columns} rows={rows} />
+            <StatusBar numberOfColumns={numberOfColumns} />
+            <Bricks numberOfColumns={numberOfColumns} numberOfRows={numberOfRows} />
           </tbody>
         </table>
         </div>

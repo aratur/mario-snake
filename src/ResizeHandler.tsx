@@ -1,28 +1,17 @@
 import {useEffect, useState, useCallback} from 'react';
-import { columns, rows } from './model/ColumnsAndRows';
+import {useDispatch} from 'react-redux';
+import { changeNumberOfColumnsAndRowsThunk } from './store/store';
 
 const ResizeHandler = () => {
   // const [lastChanged, setLastChanged] = useState(Date.now());
   const [timeout, updateTimeout] = useState<NodeJS.Timer | undefined>(undefined);
   const waitFor = 300;
-  const rowHeight: number = 25;
-  const colWidth: number = 25;
-  const statusBarHeight: number = 25;
-  const w3margins: number = 50;
-  const navigationWidth: number = 230;
-  const maxColumns: number = 20;
-  const maxRows: number = 20;
+  const dispatch = useDispatch();
 
   const handleResizeAfterTimeout = useCallback(() => {
     updateTimeout(undefined);
-    const height: number = window.innerHeight - statusBarHeight;
-    const width: number = window.innerWidth - navigationWidth - w3margins;
-    const possibleColumns: number = Math.floor(width/colWidth);
-    const possibleRows: number = Math.floor(height/rowHeight);
-    console.log(width, height,
-       ", R: ",rows.length, possibleRows,
-       ", C: " ,columns.length, possibleColumns);
-  }, []);
+    dispatch(changeNumberOfColumnsAndRowsThunk(window.innerHeight, window.innerWidth));
+  }, [dispatch]);
 
   const handleResizeEvent = useCallback((event: UIEvent) => {
     event.stopPropagation();

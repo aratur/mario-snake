@@ -4,12 +4,16 @@ import gridReducer, {
 import snakeReducer,
   { getSnakeHead, getSnakeTail, getWasKilled, setPreviousPrize,
     move, snakeReset, getBricks } from './snakeSlice';
+import sizeReducer,
+  { changeNumberOfColumnsAndRows,
+  getNumberOfColumns, getNumberOfRows } from './columnsAndRowsSlice';
 import Coordinates from '../model/Coordinates';
 
 const store = configureStore({
   reducer: {
     grid: gridReducer,
     snake: snakeReducer,
+    size: sizeReducer,
   },
 });
 
@@ -22,14 +26,18 @@ export const coputeStateThunk = () => {
   return (dispatch: DispatchType, getState: GetStoreType) => {
     const wasKilled = getWasKilled(getState());
     if (wasKilled) {
-      resetState();
+      resetStateThunk();
     }
 
     // store previous Head and Tail location
     const oldHead: Coordinates = getSnakeHead(getState());
     const oldTail: Coordinates = getSnakeTail(getState());
+
     // compute next state
-    dispatch(move());
+    const numberOfColumns = getNumberOfColumns(getState());
+    const numberOfRows = getNumberOfRows(getState());
+    dispatch(move({numberOfRows, numberOfColumns}));
+
     // update Head and Taild on the grid
     const newTail: Coordinates = getSnakeTail(getState());
     const newHead = getSnakeHead(getState());
@@ -46,11 +54,28 @@ export const coputeStateThunk = () => {
   }
 }
 
-export const resetState = () => {
+export const resetStateThunk = () => {
   return (dispatch: DispatchType, getState: GetStoreType) => {
-    dispatch(snakeReset());
+    const numberOfColumns = getNumberOfColumns(getState());
+    const numberOfRows = getNumberOfRows(getState());
+    dispatch(snakeReset({numberOfRows, numberOfColumns}));
     const bricks = getBricks(getState());
-    dispatch(gridReset(bricks));
+    dispatch(gridReset({ bricks, numberOfRows, numberOfColumns }));
+  }
+}
+
+
+export const changeNumberOfColumnsAndRowsThunk = (
+  windowInnerHeight: number,
+  windowInnerWidth: number
+) => {
+  return (dispatch: DispatchType, getState: GetStoreType) => {
+    const oldNumberOfColumns = getNumberOfColumns(getState());
+    const oldNumberOfRows = getNumberOfRows(getState());
+    dispatch(changeNumberOfColumnsAndRows({windowInnerHeight, windowInnerWidth}));
+    const newNumberOfColumns = getNumberOfRows(getState());
+    const newNumberOfRows = getNumberOfRows(getState());
+    console.log(oldNumberOfRows, newNumberOfRows, oldNumberOfColumns, newNumberOfColumns)
   }
 }
 

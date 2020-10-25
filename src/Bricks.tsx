@@ -2,15 +2,20 @@ import React from 'react';
 import Box from './Box';
 
 type Props = {
-  rows: Array<number>,
-  columns: Array<number>
+  numberOfRows: number,
+  numberOfColumns: number
 }
-const Bricks = ({ rows, columns } : Props) => {
+const Bricks = ({ numberOfRows, numberOfColumns } : Props) => {
   return <>
-    {rows
+    {Array(numberOfRows)
+    .fill(0)
+    .map((_, index) => index + 1)
     .map((row) => (
       <tr key={'row.' + String(row)}>
-        {columns.map((column) => <Box
+        {Array(numberOfColumns)
+          .fill(0)
+          .map((_, index) => index + 1)
+          .map((column) => <Box
           column={column}
           row={row}
           key={ String(column * 100 + row) }

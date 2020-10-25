@@ -3,10 +3,10 @@ import { useTypedSelector } from './store/TypedUtils';
 import { getNoOfLives } from './store/snakeSlice';
 import mushroom from './img/mario-mushroom.png';
 import disabledMushroom from './img/mario-mushroom-disabled.png';
-import { numberOfColumns } from './model/ColumnsAndRows';
 import Points from './Points';
 
-const StatusBar = () => {
+type Props = { numberOfColumns: number }
+const StatusBar = ({ numberOfColumns }: Props) => {
   const lives: number = useTypedSelector(getNoOfLives);
   const disabled: number = 3 - lives;
   const points: number = 6;

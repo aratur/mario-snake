@@ -6,8 +6,6 @@ import {
 import { RootState } from './store';
 import Grid from '../model/Grid';
 import Coordinates from '../model/Coordinates';
-import { columns, rows,
-  numberOfRows, numberOfColumns } from '../model/ColumnsAndRows';
 
 const gridAdapter = createEntityAdapter<Grid>({
   selectId: (item) => item.column * 100 + item.row,
@@ -20,31 +18,42 @@ export const isPartOfSpace = (newCoordinates: Coordinates, body: Array<Coordinat
   body.findIndex(value => value.column === newCoordinates.column
     && value.row === newCoordinates.row) > -1 ? true : false;
 
-const createGrid = (state: GridState, bricks: Array<Coordinates>) => {
-  columns.forEach((column) => {
-    rows.forEach((row) => {
-      gridAdapter.addOne(state, {
-        column,
-        row,
-        isSnake: false,
-        isHead: false,
-        isTail: false,
-        isPrize: false,
-        isBrick: !isPartOfSpace({column, row}, bricks),
-        isWall: row - 1 === 0 || column - 1 === 0
-          || row === numberOfRows || column === numberOfColumns,
+type GridInput = {
+  bricks: Array<Coordinates>,
+  numberOfColumns: number, numberOfRows: number
+}
+const createGrid = (state: GridState, input: GridInput) => {
+  Array(input.numberOfColumns)
+    .fill(0)
+    .map((_, index) => index + 1)
+    .forEach((column) => {
+      Array(input.numberOfRows)
+      .fill(0)
+      .map((_, index) => index + 1)
+      .forEach((row) => {
+        gridAdapter.addOne(state, {
+          column,
+          row,
+          isSnake: false,
+          isHead: false,
+          isTail: false,
+          isPrize: false,
+          isBrick: !isPartOfSpace({column, row}, input.bricks),
+          isWall: row - 1 === 0 || column - 1 === 0
+            || row === input.numberOfRows || column === input.numberOfColumns,
+          });
+        });
       });
-    });
-  });
 };
 
 const id = (input: Coordinates) => input.column*100 + input.row;
+
 
 const gridSlice = createSlice({
   name: 'grid',
   initialState: gridState,
   reducers: {
-    gridReset: (state, action: PayloadAction<Array<Coordinates>>) => {
+    gridReset: (state, action: PayloadAction<GridInput>) => {
       gridAdapter.removeAll(state);
       createGrid(state, action.payload);
     },
