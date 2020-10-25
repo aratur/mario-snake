@@ -79,13 +79,15 @@ const snakeSlice = createSlice({
   initialState,
   reducers: {
     changeDirection: (state, action: PayloadAction<string>) => {
-        const oldDirection = state.previousDirection;
+      if (['Left','Right','Up','Down'].includes(action.payload)) {
         const newDirection = directions[action.payload];
+        const oldDirection = state.previousDirection;
         if (oldDirection !== newDirection
           && (oldDirection.column + newDirection.column !== 0
             || oldDirection.row + newDirection.row !== 0)) {
           state.direction = newDirection;
         }
+      }
     },
     levelUp: (state) => {
       if (state.level < 10) {
