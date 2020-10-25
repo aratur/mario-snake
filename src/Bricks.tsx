@@ -5,7 +5,7 @@ type Props = {
   rows: Array<number>,
   columns: Array<number>
 }
-const Bricks = ({rows, columns} : Props) => {
+const Bricks = ({ rows, columns } : Props) => {
   return <>
     {rows
     .map((row) => (
@@ -13,7 +13,7 @@ const Bricks = ({rows, columns} : Props) => {
         {columns.map((column) => <Box
           column={column}
           row={row}
-          key={ String(column * 100 +row) }
+          key={ String(column * 100 + row) }
         />)}
       </tr>
     ))}

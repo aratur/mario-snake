@@ -11,6 +11,7 @@ import Bricks from './Bricks';
 import StatusBar from './StatusBar';
 import Navigation from './Navigation';
 import MoveOnInterval from './MoveOnInterval';
+import ResizeHandler from './ResizeHandler';
 import KeyboardControlls from './KeyboardControlls';
 import { columns, rows } from './model/ColumnsAndRows';
 
@@ -35,7 +36,6 @@ function App() {
   }, []);
 
   useEffect(() => {
-    console.log(window.innerHeight, window.innerWidth);
     if (componentDidMount) {
       dispatch(resetState());
       setComponentDidMount(false);
@@ -53,6 +53,7 @@ function App() {
       dispatchStart={dispatchStart}
       stop={stop}
     />
+    <ResizeHandler />
     {isRunning ? <MoveOnInterval level={level}/> : null}
     <div className="w3-cell-row">
       <div className="w3-cell w3-margin-top w3-center w3-mobile w3-hide-small w3-cell-middle" >
