@@ -5,7 +5,7 @@ import { changeNumberOfColumnsAndRowsThunk } from './store/store';
 const ResizeHandler = () => {
   // const [lastChanged, setLastChanged] = useState(Date.now());
   const [timeout, updateTimeout] = useState<NodeJS.Timer | undefined>(undefined);
-  const waitFor = 300;
+  const waitFor = 500;
   const dispatch = useDispatch();
 
   const handleResizeAfterTimeout = useCallback(() => {
