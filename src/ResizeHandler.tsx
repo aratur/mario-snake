@@ -20,11 +20,20 @@ const ResizeHandler = () => {
           || previousOrientation !== window.orientation){
         // if orientation property exists and value was changed
         const orientationDiff = Math.abs(Number(window.orientation) - Number(previousOrientation));
+        // visible screen elements taking up the screen space
+        const buffer: number = 80;
+        let heightBuffer: number = 0;
+        let widthBuffer: number = 0;
+        if (Math.abs(Number(window.orientation)) === 90) {
+          heightBuffer = buffer
+        } else {
+          widthBuffer = buffer
+        }
         if (orientationDiff === 90) {
           // only when the screen was rotated by 90 degrees
           // override window width and height if screen was rotated
-          heightToBeUsed = previousWidth ? previousWidth : window.innerHeight;
-          widthToBeUsed = previousHeight ? previousHeight : window.innerWidth;
+          heightToBeUsed = previousWidth ? previousWidth - heightBuffer: window.innerHeight;
+          widthToBeUsed = previousHeight ? previousHeight - widthBuffer: window.innerWidth;
           // update state
           setPreviousOrientation(window.orientation);
           setPreviousWidth(previousHeight);
@@ -59,7 +68,7 @@ const ResizeHandler = () => {
       window.removeEventListener('resize', handleResizeEvent);
     }
   }, [handleResizeEvent, previousOrientation, previousWidth, previousHeight]);
-  return <p>{previousOrientation + "." + window.orientation + "." + previousHeight + "." + window.innerHeight + "." + window.screen.availHeight + "." + window.screen.height}</p>;
+  return <p>{window.orientation + "." + previousHeight + "." + window.innerHeight + "." + window.screen.availHeight + "." + window.screen.height + "." + window.screenTop}</p>;
 }
 
 export default ResizeHandler;
