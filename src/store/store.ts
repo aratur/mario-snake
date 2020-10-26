@@ -2,7 +2,9 @@ import { configureStore } from '@reduxjs/toolkit';
 import gridReducer, {
   updateHead, updateTail, updatePrize, gridReset } from './gridSlice';
 import snakeReducer,
-  { getSnakeHead, getSnakeTail, getWasKilled, setPreviousPrize,
+  { getSnakeHead, getSnakeTail,
+    getWasKilled, setPreviousPrize,
+    snakeResetAndResize,
     move, snakeReset, getBricks } from './snakeSlice';
 import sizeReducer,
   { changeNumberOfColumnsAndRows,
@@ -72,7 +74,24 @@ export const changeNumberOfColumnsAndRowsThunk = (
     dispatch(changeNumberOfColumnsAndRows({windowInnerWidth, windowInnerHeight}));
     const newSize: ColumnsAndRowsI = getSize(getState());
     console.log(oldSize, newSize);
-    dispatch(snakeReset(newSize));
+    if (newSize.numberOfColumns === oldSize.numberOfColumns
+      && newSize.numberOfRows === oldSize.numberOfRows){
+      // do nothing
+      console.log('doing nothing');
+    } else if (newSize.numberOfRows >= oldSize.numberOfRows
+      && newSize.numberOfColumns >= oldSize.numberOfColumns){
+      // size is larger in at least one dimension
+      // and not smaller in the other one
+      // reset Snake location - don't restart the game
+      dispatch(snakeReset(newSize));
+    } else if (newSize.numberOfColumns === oldSize.numberOfRows
+      && newSize.numberOfRows === oldSize.numberOfColumns) {
+      // this should be true if screen was rotated
+      console.log('flipping the screen')
+    } else {
+      console.log('other restart all');
+      dispatch(snakeResetAndResize(newSize));
+    }
     const bricks = getBricks(getState());
     dispatch(gridReset({ bricks, size: newSize }));
   }

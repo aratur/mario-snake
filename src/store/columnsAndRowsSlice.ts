@@ -8,10 +8,10 @@ const minNumberOfRows = initialNumberOfRows;
 const rowHeight: number = 25;
 const colWidth: number = 25;
 const statusBarHeight: number = 25;
-const bottomMargin: number = 10;
+const bottomMargin: number = 15;
 const w3margins: number = 50;
-const navigationWidth: number = 175;
-const navigationHeight: number = 175;
+const navigationWidth: number = 184;
+const navigationHeight: number = 194;
 const maxColumns: number = 20;
 const maxRows: number = 20;
 
@@ -35,16 +35,17 @@ const columnsAndRowsSlice = createSlice({
       let height: number;
       let width: number;
       if (windowWidth < 600) {
-        height = windowHeight - statusBarHeight - navigationHeight;
+        height = windowHeight -
+          statusBarHeight - navigationHeight - bottomMargin;
         width = windowWidth - w3margins;
       } else {
-        height = windowHeight - statusBarHeight - bottomMargin;
+        height = windowHeight - statusBarHeight - bottomMargin-10;
         width = windowWidth - navigationWidth - w3margins;
       }
 
       const possibleColumns: number = Math.floor(width/colWidth);
       const possibleRows: number = Math.floor(height/rowHeight);
-      console.log(windowWidth, windowHeight)
+      console.log(windowWidth, windowHeight, width, height);
 
       if (possibleRows < minNumberOfRows) {
         state.numberOfRows = minNumberOfRows;

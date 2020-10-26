@@ -8,7 +8,7 @@ import { ColumnsAndRowsI } from './columnsAndRowsSlice';
 
 const initialDirection: Coordinates = directions.Right;
 const initialBody: Array<Coordinates> = [
-  { column: 2, row: 2 },
+  { column: 3, row: 5 },
 ];
 const initialLevel = 5;
 const initialNoOfLives = 3;
@@ -64,13 +64,13 @@ const initialState = {
 type SnakeState = typeof initialState;
 
 const resetState = (state: SnakeState,
-    size: ColumnsAndRowsI) => {
+    size: ColumnsAndRowsI, forceAll: boolean) => {
   state.body = initialBody;
   state.direction = initialDirection;
   state.previousDirection = initialDirection;
   state.prize = getPrize(initialBody, state.prize, size);
   state.wasKilled = initialWasKilled;
-  if (state.lives === 0){
+  if (state.lives === 0 || forceAll){
       state.lives = initialNoOfLives;
       state.points = initialPoints;
       state.snakeLength = initialSnakeLength;
@@ -111,7 +111,10 @@ const snakeSlice = createSlice({
       }
     },
     snakeReset: (state, action: PayloadAction<ColumnsAndRowsI>) => {
-      resetState(state, action.payload);
+      resetState(state, action.payload, false);
+    },
+    snakeResetAndResize: (state, action: PayloadAction<ColumnsAndRowsI>) => {
+      resetState(state, action.payload, true);
     },
     move: (state, action: PayloadAction<ColumnsAndRowsI>) => {
       const size = action.payload;
@@ -171,6 +174,6 @@ export const getLevel = (state: RootState) => state.snake.level;
 export const {
   changeDirection, levelUp, snakeReset,
   setPreviousPrize, setWasKilled,
-  levelDown,
+  levelDown, snakeResetAndResize,
   move, } = snakeSlice.actions;
 export default snakeSlice.reducer;
