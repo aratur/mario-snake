@@ -85,6 +85,14 @@ const isNotPartOfTheWall = (newCoordinates: Coordinates,
   && newCoordinates.row < size.numberOfRows
   && newCoordinates.row > 1;
 
+const pivotCoordinates = (input: Coordinates): Coordinates => {
+  return { row: input.column, column: input.row };
+};
+
+const pivotCoordinatesArray = (input: Array<Coordinates>): Array<Coordinates> => {  
+  return input.map(value => pivotCoordinates(value));
+}
+
 const snakeSlice = createSlice({
   name: 'snake',
   initialState,
@@ -115,6 +123,14 @@ const snakeSlice = createSlice({
     },
     snakeResetAndResize: (state, action: PayloadAction<ColumnsAndRowsI>) => {
       resetState(state, action.payload, true);
+    },
+    snakeOrientationChanged: (state) => {
+      state.previousDirection = pivotCoordinates(state.previousDirection);
+      state.direction = pivotCoordinates(state.direction);
+      state.body = pivotCoordinatesArray(state.body);
+      state.bricks = pivotCoordinatesArray(state.bricks);
+      state.previousPrize = pivotCoordinates(state.previousPrize);
+      state.prize = pivotCoordinates(state.prize);
     },
     move: (state, action: PayloadAction<ColumnsAndRowsI>) => {
       const size = action.payload;
@@ -175,5 +191,6 @@ export const {
   changeDirection, levelUp, snakeReset,
   setPreviousPrize, setWasKilled,
   levelDown, snakeResetAndResize,
+  snakeOrientationChanged,
   move, } = snakeSlice.actions;
 export default snakeSlice.reducer;

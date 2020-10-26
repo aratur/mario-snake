@@ -4,7 +4,7 @@ import gridReducer, {
 import snakeReducer,
   { getSnakeHead, getSnakeTail,
     getWasKilled, setPreviousPrize,
-    snakeResetAndResize,
+    snakeResetAndResize, snakeOrientationChanged,
     move, snakeReset, getBricks } from './snakeSlice';
 import sizeReducer,
   { changeNumberOfColumnsAndRows,
@@ -87,7 +87,8 @@ export const changeNumberOfColumnsAndRowsThunk = (
     } else if (newSize.numberOfColumns === oldSize.numberOfRows
       && newSize.numberOfRows === oldSize.numberOfColumns) {
       // this should be true if screen was rotated
-      console.log('flipping the screen')
+      dispatch(snakeOrientationChanged());
+      console.log('screen orientation changed')
     } else {
       console.log('other restart all');
       dispatch(snakeResetAndResize(newSize));
