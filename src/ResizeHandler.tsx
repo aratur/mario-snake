@@ -59,7 +59,7 @@ const ResizeHandler = () => {
       window.removeEventListener('resize', handleResizeEvent);
     }
   }, [handleResizeEvent, previousOrientation, previousWidth, previousHeight]);
-  return <p>{previousOrientation + ". " + window.orientation + "." + previousHeight + "." + window.innerHeight}</p>;
+  return <p>{previousOrientation + "." + window.orientation + "." + previousHeight + "." + window.innerHeight + "." + window.screen.availHeight + "." + window.screen.height}</p>;
 }
 
 export default ResizeHandler;
