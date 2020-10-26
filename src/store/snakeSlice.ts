@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from './store';
 import Coordinates from '../model/Coordinates';
 import directions from '../model/Directions';
+import { ColumnsAndRowsI } from './columnsAndRowsSlice';
 
 
 const initialDirection: Coordinates = directions.Right;
@@ -17,10 +18,10 @@ const getRandomNumberFromTo = (from: number, to: number) => {
 }
 const getRandomRow = (numberOfRows: number) => getRandomNumberFromTo(2, numberOfRows-1);
 const getRandomColumn = (numberOfColumns: number) => getRandomNumberFromTo(2, numberOfColumns-1);
-const getNewCoordinates = (numberOfRows: number, numberOfColumns: number) => {
+const getNewCoordinates = (size: ColumnsAndRowsI) => {
   return {
-    column: getRandomColumn(numberOfColumns),
-    row: getRandomRow(numberOfRows),
+    column: getRandomColumn(size.numberOfColumns),
+    row: getRandomRow(size.numberOfRows),
   };
 };
 export const isPartOfSpace = (newCoordinates: Coordinates, body: Array<Coordinates>) =>
@@ -30,19 +31,14 @@ export const isPartOfSpace = (newCoordinates: Coordinates, body: Array<Coordinat
 const getPrize = (
   body: Array<Coordinates>,
   oldPrize: Coordinates,
-  numberOfRows:number,
-  numberOfColumns:number) => {
+  size: ColumnsAndRowsI) => {
 
-  let newCoordinates: Coordinates = getNewCoordinates(
-    numberOfRows, numberOfColumns
-  );
+  let newCoordinates: Coordinates = getNewCoordinates(size);
   while (isPartOfSpace(newCoordinates, body) ||
     (oldPrize.column === newCoordinates.column
     && oldPrize.row === newCoordinates.row)
   ) {
-    newCoordinates = getNewCoordinates(
-      numberOfRows, numberOfColumns
-    );
+    newCoordinates = getNewCoordinates(size);
   }
   return newCoordinates;
 };
@@ -68,12 +64,11 @@ const initialState = {
 type SnakeState = typeof initialState;
 
 const resetState = (state: SnakeState,
-    numberOfRows: number,
-    numberOfColumns: number) => {
+    size: ColumnsAndRowsI) => {
   state.body = initialBody;
   state.direction = initialDirection;
   state.previousDirection = initialDirection;
-  state.prize = getPrize(initialBody, state.prize, numberOfRows, numberOfColumns);
+  state.prize = getPrize(initialBody, state.prize, size);
   state.wasKilled = initialWasKilled;
   if (state.lives === 0){
       state.lives = initialNoOfLives;
@@ -84,16 +79,11 @@ const resetState = (state: SnakeState,
 }
 
 const isNotPartOfTheWall = (newCoordinates: Coordinates,
-  numberOfRows: number, numberOfColumns: number) =>
-  newCoordinates.column < numberOfColumns
+  size: ColumnsAndRowsI) =>
+  newCoordinates.column < size.numberOfColumns
   && newCoordinates.column > 1
-  && newCoordinates.row < numberOfRows
+  && newCoordinates.row < size.numberOfRows
   && newCoordinates.row > 1;
-
-type ColumnsAndRows = {
-  numberOfRows: number,
-  numberOfColumns: number,
-}
 
 const snakeSlice = createSlice({
   name: 'snake',
@@ -120,12 +110,11 @@ const snakeSlice = createSlice({
         state.level -= 1;
       }
     },
-    snakeReset: (state, action: PayloadAction<ColumnsAndRows>) => {
-      const { numberOfRows, numberOfColumns } = action.payload;
-      resetState(state, numberOfRows, numberOfColumns);
+    snakeReset: (state, action: PayloadAction<ColumnsAndRowsI>) => {
+      resetState(state, action.payload);
     },
-    move: (state, action: PayloadAction<ColumnsAndRows>) => {
-      const { numberOfRows, numberOfColumns } = action.payload;
+    move: (state, action: PayloadAction<ColumnsAndRowsI>) => {
+      const size = action.payload;
       state.previousDirection = state.direction;
 
       const oldHead = state.body[state.body.length-1];
@@ -133,7 +122,7 @@ const snakeSlice = createSlice({
         column: oldHead.column + state.direction.column,
         row: oldHead.row + state.direction.row
       };
-      if (isNotPartOfTheWall(newHead, numberOfRows, numberOfColumns)
+      if (isNotPartOfTheWall(newHead, size)
         && !isPartOfSpace(newHead, state.body)) {
           if (!isPartOfSpace(newHead, state.bricks)){
             state.points += 1;
@@ -146,8 +135,9 @@ const snakeSlice = createSlice({
             && newHead.row === state.prize.row ){
             state.points += 25;
             state.body.push(newHead);
-            state.prize = getPrize(state.body, state.prize, numberOfRows, numberOfColumns);
-          } else if (state.bricks.length === (numberOfRows - 2) * (numberOfColumns - 2)){
+            state.prize = getPrize(state.body, state.prize, size);
+          } else if (state.bricks.length === (size.numberOfRows - 2) *
+                                             (size.numberOfColumns - 2)){
               state.bricks = initialBrics;
               state.wasKilled = true;
               state.body.push(newHead);

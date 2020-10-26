@@ -1,13 +1,13 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import './App.css';
 import { useDispatch } from 'react-redux';
-import { resetStateThunk } from './store/store';
+import { resetStateThunk, changeNumberOfColumnsAndRowsThunk } from './store/store';
 import { useTypedSelector } from './store/TypedUtils';
 import {
   changeDirection, getLevel,
   getWasKilled,
   } from './store/snakeSlice';
-import { getNumberOfRows, getNumberOfColumns } from './store/columnsAndRowsSlice';
+import { getSize } from './store/columnsAndRowsSlice';
 import Bricks from './Bricks';
 import StatusBar from './StatusBar';
 import Navigation from './Navigation';
@@ -20,8 +20,7 @@ function App() {
   const dispatch = useDispatch();
   const level = useTypedSelector(getLevel);
   const wasKilled = useTypedSelector(getWasKilled);
-  const numberOfRows = useTypedSelector(getNumberOfRows);
-  const numberOfColumns = useTypedSelector(getNumberOfColumns);
+  const { numberOfRows, numberOfColumns } = useTypedSelector(getSize);
   const [isRunning, setIsRunning] = useState(false);
   const [componentDidMount, setComponentDidMount] = useState(true);
 
@@ -39,7 +38,9 @@ function App() {
 
   useEffect(() => {
     if (componentDidMount) {
-      dispatch(resetStateThunk());
+      dispatch(changeNumberOfColumnsAndRowsThunk(
+        window.innerHeight,
+        window.innerWidth));
       setComponentDidMount(false);
     } else if (wasKilled && isRunning){
       stop();

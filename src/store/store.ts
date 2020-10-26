@@ -6,7 +6,7 @@ import snakeReducer,
     move, snakeReset, getBricks } from './snakeSlice';
 import sizeReducer,
   { changeNumberOfColumnsAndRows,
-  getNumberOfColumns, getNumberOfRows } from './columnsAndRowsSlice';
+  getSize, ColumnsAndRowsI } from './columnsAndRowsSlice';
 import Coordinates from '../model/Coordinates';
 
 const store = configureStore({
@@ -34,9 +34,8 @@ export const coputeStateThunk = () => {
     const oldTail: Coordinates = getSnakeTail(getState());
 
     // compute next state
-    const numberOfColumns = getNumberOfColumns(getState());
-    const numberOfRows = getNumberOfRows(getState());
-    dispatch(move({numberOfRows, numberOfColumns}));
+    const size: ColumnsAndRowsI = getSize(getState());
+    dispatch(move(size));
 
     // update Head and Taild on the grid
     const newTail: Coordinates = getSnakeTail(getState());
@@ -56,11 +55,10 @@ export const coputeStateThunk = () => {
 
 export const resetStateThunk = () => {
   return (dispatch: DispatchType, getState: GetStoreType) => {
-    const numberOfColumns = getNumberOfColumns(getState());
-    const numberOfRows = getNumberOfRows(getState());
-    dispatch(snakeReset({numberOfRows, numberOfColumns}));
+    const size: ColumnsAndRowsI = getSize(getState())
+    dispatch(snakeReset(size));
     const bricks = getBricks(getState());
-    dispatch(gridReset({ bricks, numberOfRows, numberOfColumns }));
+    dispatch(gridReset({ bricks, size }));
   }
 }
 
@@ -70,12 +68,13 @@ export const changeNumberOfColumnsAndRowsThunk = (
   windowInnerWidth: number
 ) => {
   return (dispatch: DispatchType, getState: GetStoreType) => {
-    const oldNumberOfColumns = getNumberOfColumns(getState());
-    const oldNumberOfRows = getNumberOfRows(getState());
-    dispatch(changeNumberOfColumnsAndRows({windowInnerHeight, windowInnerWidth}));
-    const newNumberOfColumns = getNumberOfRows(getState());
-    const newNumberOfRows = getNumberOfRows(getState());
-    console.log(oldNumberOfRows, newNumberOfRows, oldNumberOfColumns, newNumberOfColumns)
+    const oldSize: ColumnsAndRowsI = getSize(getState())
+    dispatch(changeNumberOfColumnsAndRows({windowInnerWidth, windowInnerHeight}));
+    const newSize: ColumnsAndRowsI = getSize(getState());
+    console.log(oldSize, newSize);
+    dispatch(snakeReset(newSize));
+    const bricks = getBricks(getState());
+    dispatch(gridReset({ bricks, size: newSize }));
   }
 }
 

@@ -16,7 +16,7 @@ const Navigation = ( { start, stop, isRunning } : Props) => {
 
   return (
   <>
-    <div className="w3-cell-row" style={{width: '200px'}} >
+    <div className="w3-cell-row"  >
       <div className="w3-cell w3-cell-middle w3-hide-large w3-hide-medium">
         {button('Slower')}
         {button('Faster')}
@@ -32,7 +32,7 @@ const Navigation = ( { start, stop, isRunning } : Props) => {
           {button('Down')}
       </div>
     </div>
-    <div className="w3-cell-row w3-center w3-padding-16" style={{width: '200px'}}>
+    <div className="w3-cell-row w3-center w3-padding-16">
       <div className="w3-cell w3-hide-small">
         {button('Slower')}
         {button('Faster')}

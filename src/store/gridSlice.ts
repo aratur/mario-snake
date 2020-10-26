@@ -6,6 +6,7 @@ import {
 import { RootState } from './store';
 import Grid from '../model/Grid';
 import Coordinates from '../model/Coordinates';
+import { ColumnsAndRowsI } from './columnsAndRowsSlice';
 
 const gridAdapter = createEntityAdapter<Grid>({
   selectId: (item) => item.column * 100 + item.row,
@@ -20,14 +21,14 @@ export const isPartOfSpace = (newCoordinates: Coordinates, body: Array<Coordinat
 
 type GridInput = {
   bricks: Array<Coordinates>,
-  numberOfColumns: number, numberOfRows: number
+  size: ColumnsAndRowsI
 }
 const createGrid = (state: GridState, input: GridInput) => {
-  Array(input.numberOfColumns)
+  Array(input.size.numberOfColumns)
     .fill(0)
     .map((_, index) => index + 1)
     .forEach((column) => {
-      Array(input.numberOfRows)
+      Array(input.size.numberOfRows)
       .fill(0)
       .map((_, index) => index + 1)
       .forEach((row) => {
@@ -39,8 +40,10 @@ const createGrid = (state: GridState, input: GridInput) => {
           isTail: false,
           isPrize: false,
           isBrick: !isPartOfSpace({column, row}, input.bricks),
-          isWall: row - 1 === 0 || column - 1 === 0
-            || row === input.numberOfRows || column === input.numberOfColumns,
+          isWall: row - 1 === 0
+            || column - 1 === 0
+            || row === input.size.numberOfRows
+            || column === input.size.numberOfColumns,
           });
         });
       });
