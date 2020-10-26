@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useCallback} from 'react';
+import {useEffect, useState, useCallback} from 'react';
 import {useDispatch} from 'react-redux';
 import { changeNumberOfColumnsAndRowsThunk } from './store/store';
 
@@ -6,69 +6,49 @@ const ResizeHandler = () => {
   // const [lastChanged, setLastChanged] = useState(Date.now());
   const [timeout, updateTimeout] = useState<NodeJS.Timer | undefined>(undefined);
   const [previousOrientation, setPreviousOrientation] = useState<string | number | undefined>(undefined);
-  const [previousWidth, setPreviousWidth] = useState<number | undefined>(undefined);
-  const [previousHeight, setPreviousHeight] = useState<number | undefined>(undefined);
   const waitFor = 300;
   const dispatch = useDispatch();
 
   const handleResizeAfterTimeout = useCallback(() => {
     updateTimeout(undefined);
-    let heightToBeUsed = window.innerHeight;
-    let widthToBeUsed = window.innerWidth;
-    if (typeof window.orientation !== "undefined"){
-      if (typeof previousOrientation === "undefined"
-          || previousOrientation !== window.orientation){
-        // if orientation property exists and value was changed
-        const orientationDiff = Math.abs(Number(window.orientation) - Number(previousOrientation));
-        // visible screen elements taking up the screen space
-        const buffer: number = 80;
-        let heightBuffer: number = 0;
-        let widthBuffer: number = 0;
-        if (Math.abs(Number(window.orientation)) === 90) {
-          heightBuffer = buffer
-        } else {
-          widthBuffer = buffer
-        }
-        if (orientationDiff === 90) {
-          // only when the screen was rotated by 90 degrees
-          // override window width and height if screen was rotated
-          heightToBeUsed = previousWidth ? previousWidth - heightBuffer: window.innerHeight;
-          widthToBeUsed = previousHeight ? previousHeight - widthBuffer: window.innerWidth;
-          // update state
-          setPreviousOrientation(window.orientation);
-          setPreviousWidth(previousHeight);
-          setPreviousHeight(previousWidth);
-        }
-      }
-    }
-    dispatch(changeNumberOfColumnsAndRowsThunk(heightToBeUsed, widthToBeUsed));
-  }, [dispatch, previousWidth, previousHeight, previousOrientation]);
+    dispatch(changeNumberOfColumnsAndRowsThunk(window.innerHeight, window.innerWidth));
+  }, [dispatch]);
 
   const handleResizeEvent = useCallback((event: UIEvent) => {
     event.stopPropagation();
     if (typeof timeout !== "undefined") {
       clearTimeout(timeout);
     }
+    if (typeof window.orientation !== "undefined"){
+      if (typeof previousOrientation === "undefined"
+          || previousOrientation !== window.orientation){
+        // if orientation property exists and value was changed
+        const orientationDiff = Math.abs(Number(window.orientation) - Number(previousOrientation));
+        // visible screen elements taking up the screen space
+        if (orientationDiff === 90) {
+          // only when the screen was rotated by 90 degrees
+          const behavior: 'auto' = 'auto';
+          window.scrollTo({ left: 0, top: 100, behavior });
+          window.scrollTo({ left: 0, top: 0, behavior });
+          setPreviousOrientation(window.orientation);
+        }
+      }
+    }
     updateTimeout(setTimeout(handleResizeAfterTimeout, waitFor));
-  }, [timeout, handleResizeAfterTimeout]);
+  }, [timeout, handleResizeAfterTimeout, previousOrientation]);
 
   useEffect(() => {
     if (typeof previousOrientation === "undefined"
       && typeof window.orientation !== "undefined") {
       setPreviousOrientation(window.orientation);
     }
-    if (typeof previousWidth === "undefined") {
-      setPreviousWidth(window.innerWidth);
-    }
-    if (typeof previousHeight === "undefined") {
-      setPreviousHeight(window.innerHeight);
-    }
     window.addEventListener("resize", handleResizeEvent);
     return () => {
       window.removeEventListener('resize', handleResizeEvent);
     }
-  }, [handleResizeEvent, previousOrientation, previousWidth, previousHeight]);
-  return <p>{window.orientation + "." + previousHeight + "." + window.innerHeight + "." + window.screen.availHeight + "." + window.screen.height + "." + window.screenTop}</p>;
+  }, [handleResizeEvent, previousOrientation]);
+  return null;
+  // window.orientation + "." + previousHeight + "." + window.innerHeight + "." + window.screen.availHeight + "." + window.screen.height + "." + window.screenTop}
 }
 
 export default ResizeHandler;
