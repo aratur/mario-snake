@@ -7,8 +7,9 @@ const MoveOnInterval = ({ level }: Props) => {
   const dispatch = useDispatch();
   useEffect(() => {
     let cleanup: NodeJS.Timer | undefined;
+    console.log("delay" + 1400/level)
     // https://evanshortiss.com/timers-in-typescript
-    cleanup = setInterval(() => dispatch(coputeStateThunk()), 1000/level);
+    cleanup = setInterval(() => dispatch(coputeStateThunk(Date.now())), 1400/level);
     return () => {
        if (cleanup) clearInterval(cleanup);
     }

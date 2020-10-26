@@ -51,7 +51,14 @@ const createGrid = (state: GridState, input: GridInput) => {
 
 const id = (input: Coordinates) => input.column*100 + input.row;
 
-
+type HeadAndTail = {
+  oldTail: Coordinates,
+  newTail: Coordinates,
+  oldHead: Coordinates,
+  newHead: Coordinates,
+  oldPrize: Coordinates,
+  newPrize: Coordinates,
+}
 const gridSlice = createSlice({
   name: 'grid',
   initialState: gridState,
@@ -60,47 +67,59 @@ const gridSlice = createSlice({
       gridAdapter.removeAll(state);
       createGrid(state, action.payload);
     },
-    updateHead: (state, action: PayloadAction<Coordinates>) => {
-      const oldHeadId = state.ids.find(id => state.entities[id]?.isHead)
-      if (oldHeadId){
-        const oldHeadEntity = state.entities[oldHeadId];
-        if (oldHeadEntity) {
-          oldHeadEntity.isHead = false;
-          oldHeadEntity.isSnake = true;
+    updateTailAndHeadAndPrize: (state, action: PayloadAction<HeadAndTail>) => {
+      const { oldTail, newTail,
+        oldHead, newHead,
+        oldPrize, newPrize  } = action.payload;
+
+      if (oldTail.column !== newTail.column || oldTail.row !== newTail.row){
+        const oldTailId = state.ids.find(id => state.entities[id]?.isTail)
+        if (oldTailId){
+          const oldTailEntity = state.entities[oldTailId];
+          if (oldTailEntity) {
+            oldTailEntity.isTail = false;
+          }
+        }
+        const newTailId = id(newTail);
+        const newTailEntity = state.entities[newTailId];
+        if (newTailEntity) {
+          newTailEntity.isTail = true;
+          newTailEntity.isSnake = false;
         }
       }
-      const newHeadId = id(action.payload);
-      const newHeadEntity = state.entities[newHeadId];
-      if (newHeadEntity) {
-        newHeadEntity.isHead = true;
-        newHeadEntity.isBrick = false;
-      };
-    },
-    updateTail: (state, action: PayloadAction<Coordinates>) => {
-      const oldTailId = state.ids.find(id => state.entities[id]?.isTail)
-      if (oldTailId){
-        const oldTailEntity = state.entities[oldTailId];
-        if (oldTailEntity) {
-          oldTailEntity.isTail = false;
+
+      if (oldHead.column !== newHead.column || oldHead.row !== newHead.row){
+        const oldHeadId = state.ids.find(id => state.entities[id]?.isHead)
+        if (oldHeadId){
+          const oldHeadEntity = state.entities[oldHeadId];
+          if (oldHeadEntity) {
+            oldHeadEntity.isHead = false;
+            oldHeadEntity.isSnake = true;
+          }
         }
+        const newHeadId = id(newHead);
+        const newHeadEntity = state.entities[newHeadId];
+        if (newHeadEntity) {
+          newHeadEntity.isHead = true;
+          newHeadEntity.isBrick = false;
+        };
       }
-      const newTailId = id(action.payload);
-      const newTailEntity = state.entities[newTailId];
-      if (newTailEntity) {
-        newTailEntity.isTail = true;
-        newTailEntity.isSnake = false;
-      }
-    },
-    updatePrize: (state, action: PayloadAction<Coordinates>) => {
+
       const oldPrizeId = state.ids.find(id => state.entities[id]?.isPrize)
-      if (oldPrizeId){
-        const oldPrizeEntity = state.entities[oldPrizeId];
-        if (oldPrizeEntity) oldPrizeEntity.isPrize = false;
-      }
-      const newPrizeId = id(action.payload);
-      const newPrizeEntity = state.entities[newPrizeId];
-      if (newPrizeEntity) {
-        newPrizeEntity.isPrize = true;
+      console.log(oldPrize, newPrize);
+      if (oldPrize.column !== newPrize.column
+        || oldPrize.row !== newPrize.row
+        || typeof oldPrizeId === "undefined") {
+        // dispatch(setPreviousPrize(newPrize));
+        if (oldPrizeId){
+          const oldPrizeEntity = state.entities[oldPrizeId];
+          if (oldPrizeEntity) oldPrizeEntity.isPrize = false;
+        }
+        const newPrizeId = id(newPrize);
+        const newPrizeEntity = state.entities[newPrizeId];
+        if (newPrizeEntity) {
+          newPrizeEntity.isPrize = true;
+        }
       }
     },
   },
@@ -113,6 +132,6 @@ const gridSelectors = gridAdapter.getSelectors<RootState>(
 export const selectById = (
     state: RootState, column: number, row: number
   ) => gridSelectors.selectById(state, column * 100 + row);
-export const { updateHead, updateTail,
-  updatePrize, gridReset } = gridSlice.actions;
+export const { updateTailAndHeadAndPrize,
+  gridReset } = gridSlice.actions;
 export default gridSlice.reducer;

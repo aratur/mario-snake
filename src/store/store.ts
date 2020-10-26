@@ -1,9 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit';
 import gridReducer, {
-  updateHead, updateTail, updatePrize, gridReset } from './gridSlice';
+  updateTailAndHeadAndPrize, gridReset } from './gridSlice';
 import snakeReducer,
   { getSnakeHead, getSnakeTail,
-    getWasKilled, setPreviousPrize,
+    getWasKilled,
     snakeResetAndResize, snakeOrientationChanged,
     move, snakeReset, getBricks } from './snakeSlice';
 import sizeReducer,
@@ -17,6 +17,12 @@ const store = configureStore({
     snake: snakeReducer,
     size: sizeReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+      immutableStateInvariant: false,
+      serializableStateInvariant: false,
+    }),
 });
 
 type DispatchType = typeof store.dispatch;
@@ -24,8 +30,8 @@ type GetStoreType = typeof store.getState;
 
 export type RootState = ReturnType<typeof store.getState>
 
-export const coputeStateThunk = () => {
-  return (dispatch: DispatchType, getState: GetStoreType) => {
+export const coputeStateThunk = (startTime: number) => {
+  return async (dispatch: DispatchType, getState: GetStoreType) => {
     const wasKilled = getWasKilled(getState());
     if (wasKilled) {
       resetStateThunk();
@@ -37,21 +43,24 @@ export const coputeStateThunk = () => {
 
     // compute next state
     const size: ColumnsAndRowsI = getSize(getState());
-    dispatch(move(size));
+    const oldPrize: Coordinates = getState().snake.prize;
+    dispatch(move({size, startTime, initTime: Date.now()}));
+
+    const moveA =  Date.now() - startTime;
+    await new Promise(r => setTimeout(r, 70-moveA));
+    const moveB =  Date.now() - startTime;
 
     // update Head and Taild on the grid
     const newTail: Coordinates = getSnakeTail(getState());
     const newHead = getSnakeHead(getState());
-    if (oldTail !== newTail) dispatch(updateTail(newTail));
-    if (oldHead !== newHead) dispatch(updateHead(newHead));
-    // check if the Prize has changed if yes updete on the grid
-    const previousPrize: Coordinates = getState().snake.previousPrize;
     const newPrize: Coordinates = getState().snake.prize;
-    if (previousPrize.column !== newPrize.column
-      || previousPrize.row !== newPrize.row) {
-      dispatch(updatePrize(getState().snake.prize));
-      dispatch(setPreviousPrize(newPrize));
-    }
+
+    dispatch(updateTailAndHeadAndPrize({oldTail,newTail, oldHead,newHead, oldPrize, newPrize}));
+    const headTailT = Date.now() - moveB - startTime;
+    await new Promise(r => setTimeout(r, 50-headTailT));
+    // check if the Prize has changed if yes updete on the grid
+    console.log("total:", Date.now() - startTime,
+    "move:" + moveA, moveB, "headTail:" + headTailT,);
   }
 }
 

@@ -8,7 +8,7 @@ const minNumberOfRows = initialNumberOfRows;
 const rowHeight: number = 25;
 const colWidth: number = 25;
 const statusBarHeight: number = 25;
-const bottomMargin: number = 65; //15
+const bottomMargin: number = 25; //15
 const w3margins: number = 50;
 const navigationWidth: number = 184;
 const navigationHeight: number = 194;
@@ -37,10 +37,10 @@ const columnsAndRowsSlice = createSlice({
       if (windowWidth < 600) {
         height = windowHeight -
           statusBarHeight - navigationHeight - bottomMargin;
-        width = windowWidth - w3margins - 40;
+        width = windowWidth - w3margins - 0;
       } else {
         height = windowHeight - statusBarHeight - bottomMargin;
-        width = windowWidth - navigationWidth - w3margins - 50;
+        width = windowWidth - navigationWidth - w3margins - 10;
       }
 
       const possibleColumns: number = Math.floor(width/colWidth);

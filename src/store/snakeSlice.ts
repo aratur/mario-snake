@@ -53,7 +53,6 @@ const initialState = {
   direction: initialDirection,
   previousDirection: initialDirection,
   level: initialLevel,
-  previousPrize: initialPrize,
   prize: initialPrize,
   lives: initialNoOfLives,
   points: initialPoints,
@@ -89,10 +88,15 @@ const pivotCoordinates = (input: Coordinates): Coordinates => {
   return { row: input.column, column: input.row };
 };
 
-const pivotCoordinatesArray = (input: Array<Coordinates>): Array<Coordinates> => {  
+const pivotCoordinatesArray = (input: Array<Coordinates>): Array<Coordinates> => {
   return input.map(value => pivotCoordinates(value));
 }
 
+type tmp = {
+  size: ColumnsAndRowsI,
+  startTime: number,
+  initTime: number
+}
 const snakeSlice = createSlice({
   name: 'snake',
   initialState,
@@ -129,11 +133,10 @@ const snakeSlice = createSlice({
       state.direction = pivotCoordinates(state.direction);
       state.body = pivotCoordinatesArray(state.body);
       state.bricks = pivotCoordinatesArray(state.bricks);
-      state.previousPrize = pivotCoordinates(state.previousPrize);
       state.prize = pivotCoordinates(state.prize);
     },
-    move: (state, action: PayloadAction<ColumnsAndRowsI>) => {
-      const size = action.payload;
+    move: (state, action: PayloadAction<tmp>) => {
+      const size = action.payload.size;
       state.previousDirection = state.direction;
 
       const oldHead = state.body[state.body.length-1];
@@ -170,13 +173,11 @@ const snakeSlice = createSlice({
         if (state.lives > 0) state.lives -= 1;
         state.wasKilled = true;
       }
+      // console.log('completed move:', Date.now() - action.payload.startTime, Date.now() - action.payload.initTime)
     },
     setWasKilled: (state, action: PayloadAction<boolean>) => {
       state.wasKilled = action.payload;
     },
-    setPreviousPrize: (state, action: PayloadAction<Coordinates>) => {
-      state.previousPrize = action.payload;
-    }
   },
 });
 
@@ -188,8 +189,7 @@ export const getSnakeHead = (state: RootState) => state.snake.body[state.snake.b
 export const getSnakeTail = (state: RootState) => state.snake.body[0];
 export const getLevel = (state: RootState) => state.snake.level;
 export const {
-  changeDirection, levelUp, snakeReset,
-  setPreviousPrize, setWasKilled,
+  changeDirection, levelUp, snakeReset, setWasKilled,
   levelDown, snakeResetAndResize,
   snakeOrientationChanged,
   move, } = snakeSlice.actions;
