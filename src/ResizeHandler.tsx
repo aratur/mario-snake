@@ -33,7 +33,7 @@ const ResizeHandler = () => {
       }
     }
     dispatch(changeNumberOfColumnsAndRowsThunk(heightToBeUsed, widthToBeUsed));
-  }, [dispatch]);
+  }, [dispatch, previousWidth, previousHeight, previousOrientation]);
 
   const handleResizeEvent = useCallback((event: UIEvent) => {
     event.stopPropagation();
@@ -58,8 +58,8 @@ const ResizeHandler = () => {
     return () => {
       window.removeEventListener('resize', handleResizeEvent);
     }
-  }, [handleResizeEvent, previousOrientation]);
-  return <p>{previousOrientation}</p>;
+  }, [handleResizeEvent, previousOrientation, previousWidth, previousHeight]);
+  return <p>{previousOrientation + "." + previousHeight + "." + window.innerHeight}</p>;
 }
 
 export default ResizeHandler;
