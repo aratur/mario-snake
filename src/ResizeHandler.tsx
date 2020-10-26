@@ -5,17 +5,34 @@ import { changeNumberOfColumnsAndRowsThunk } from './store/store';
 const ResizeHandler = () => {
   // const [lastChanged, setLastChanged] = useState(Date.now());
   const [timeout, updateTimeout] = useState<NodeJS.Timer | undefined>(undefined);
-  const [orientation, setOrientation] = useState<number | undefined>(undefined);
+  const [previousOrientation, setPreviousOrientation] = useState<string | number | undefined>(undefined);
+  const [previousWidth, setPreviousWidth] = useState<number | undefined>(undefined);
+  const [previousHeight, setPreviousHeight] = useState<number | undefined>(undefined);
   const waitFor = 300;
   const dispatch = useDispatch();
 
   const handleResizeAfterTimeout = useCallback(() => {
     updateTimeout(undefined);
-    console.log(window.innerHeight, window.outerHeight);
+    let heightToBeUsed = window.innerHeight;
+    let widthToBeUsed = window.innerWidth;
     if (typeof window.orientation !== "undefined"){
-      setOrientation(Number(window.orientation));
+      if (typeof previousOrientation === "undefined"
+          || previousOrientation !== window.orientation){
+        // if orientation property exists and value was changed
+        const orientationDiff = Math.abs(Number(window.orientation) - Number(previousOrientation));
+        if (orientationDiff === 90) {
+          // only when the screen was rotated by 90 degrees
+          // override window width and height if screen was rotated
+          heightToBeUsed = previousWidth ? previousWidth : window.innerHeight;
+          widthToBeUsed = previousHeight ? previousHeight : window.innerWidth;
+          // update state
+          setPreviousOrientation(window.orientation);
+          setPreviousWidth(previousHeight);
+          setPreviousHeight(previousWidth);
+        }
+      }
     }
-    dispatch(changeNumberOfColumnsAndRowsThunk(window.innerHeight, window.innerWidth));
+    dispatch(changeNumberOfColumnsAndRowsThunk(heightToBeUsed, widthToBeUsed));
   }, [dispatch]);
 
   const handleResizeEvent = useCallback((event: UIEvent) => {
@@ -27,16 +44,22 @@ const ResizeHandler = () => {
   }, [timeout, handleResizeAfterTimeout]);
 
   useEffect(() => {
-    if (typeof orientation === "undefined"
+    if (typeof previousOrientation === "undefined"
       && typeof window.orientation !== "undefined") {
-      setOrientation(Number(window.orientation));
+      setPreviousOrientation(window.orientation);
+    }
+    if (typeof previousWidth === "undefined") {
+      setPreviousWidth(window.innerWidth);
+    }
+    if (typeof previousHeight === "undefined") {
+      setPreviousHeight(window.innerHeight);
     }
     window.addEventListener("resize", handleResizeEvent);
     return () => {
       window.removeEventListener('resize', handleResizeEvent);
     }
-  }, [handleResizeEvent, orientation]);
-  return <p>{orientation}</p>;
+  }, [handleResizeEvent, previousOrientation]);
+  return <p>{previousOrientation}</p>;
 }
 
 export default ResizeHandler;

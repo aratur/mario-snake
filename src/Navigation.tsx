@@ -32,8 +32,8 @@ const Navigation = ( { start, stop, isRunning } : Props) => {
           {button('Down')}
       </div>
     </div>
-    <div className="w3-cell-row w3-center w3-padding-16">
-      <div className="w3-cell w3-hide-small">
+    <div className="w3-cell-row w3-center w3-padding-16 w3-hide-small">
+      <div className="w3-cell">
         {button('Slower')}
         {button('Faster')}
         {isRunning ? button('Stop') : button('Start')}
