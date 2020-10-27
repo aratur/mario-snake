@@ -103,17 +103,15 @@ const pivotCoordinatesArray = (input: Array<Coordinates>): Array<Coordinates> =>
   return input.map(value => pivotCoordinates(value));
 }
 
-
-let previousTime = 0;
-const values: Array<number> = [];
-const getAverage = () => Math.round(values.reduce((pv, cv) => pv+cv, 0)/values.length * 10 ) / 10;
-const measurePerformance = (time: number) => {
-  if (time - previousTime > 0){
-    values.push(time - previousTime);
-    previousTime = time;
-    if (values.length > 10 ) values.shift();
-    console.log(getAverage())
-  }
+const pivotArrayOfArrays = (input: Array<Array<boolean>>): Array<Array<boolean>> => {
+  return input
+  .map(
+    (col, col_index) => col
+    .map(
+      (_, row_index) =>
+        input[row_index][col_index]
+      )
+  );
 }
 
 const snakeSlice = createSlice({
@@ -179,11 +177,10 @@ const snakeSlice = createSlice({
       state.previousDirection = pivotCoordinates(state.previousDirection);
       state.direction = pivotCoordinates(state.direction);
       state.body = pivotCoordinatesArray(state.body);
-      // state.bricks = pivotCoordinatesArray(state.bricks);
+      state.bricks = pivotArrayOfArrays(state.bricks);
       state.prize = pivotCoordinates(state.prize);
     },
     move: (state, action: PayloadAction<ColumnsAndRowsI>) => {
-      previousTime = Date.now();
       const size: ColumnsAndRowsI = action.payload;
       state.previousDirection = state.direction;
 
@@ -222,7 +219,6 @@ const snakeSlice = createSlice({
         state.wasKilled = true;
       }
 
-      measurePerformance(Date.now());
     },
     setWasKilled: (state, action: PayloadAction<boolean>) => {
       state.wasKilled = action.payload;
