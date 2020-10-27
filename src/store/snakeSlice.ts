@@ -7,12 +7,13 @@ import { ColumnsAndRowsI } from './columnsAndRowsSlice';
 
 
 const initialDirection: Coordinates = directions.Right;
-const initialBody: Array<Coordinates> = [
-  { column: 3, row: 5 },
-];
+const initialBody: Array<Coordinates> = [{ column: 3, row: 5 },];
 const initialLevel = 8;
 const initialNoOfLives = 3;
 const initialSnakeLength = 29;
+// Coordinates start from 1 and correspond to the gridSlice dimensions
+// therefore the offset is needed for arrays: border (1) + index0 (1) = 2
+const offset = 2;
 const getRandomNumberFromTo = (from: number, to: number) => {
   return Math.round(Math.random() * (to - from) + from);
 }
@@ -24,6 +25,7 @@ const getNewCoordinates = (size: ColumnsAndRowsI) => {
     row: getRandomRow(size.numberOfRows),
   };
 };
+
 export const isPartOfSpace = (newCoordinates: Coordinates, body: Array<Coordinates>) =>
   body.findIndex(value => value.column === newCoordinates.column
     && value.row === newCoordinates.row) > -1 ? true : false;
@@ -32,7 +34,6 @@ const getPrize = (
   body: Array<Coordinates>,
   oldPrize: Coordinates,
   size: ColumnsAndRowsI) => {
-
   let newCoordinates: Coordinates = getNewCoordinates(size);
   while (isPartOfSpace(newCoordinates, body) ||
     (oldPrize.column === newCoordinates.column
@@ -45,16 +46,19 @@ const getPrize = (
 
 const initialPrize: Coordinates = { column: 0, row: 0 };
 const initialPoints: number = 0;
-const initialBrics: Array<Coordinates> = [];
-const initialBricksU = (size: ColumnsAndRowsI): Array<Array<boolean>> => {
-  return Array(size.numberOfColumns - 2).fill(Array(size.numberOfRows - 2).fill(true));
+const initialBricks = (
+    size: ColumnsAndRowsI = {numberOfColumns: offset, numberOfRows: offset}
+  ): Array<Array<boolean>> => {
+  return Array(size.numberOfColumns - offset)
+    .fill(Array(size.numberOfRows - offset)
+    .fill(true));
 };
 const initialClearedBricks:number = 0;
 const initialWasKilled: boolean = false;
 
 const initialState = {
   body: initialBody,
-  bricksU: initialBricksU({numberOfColumns: 2, numberOfRows: 2}),
+  bricks: initialBricks(),
   clearedBricks: initialClearedBricks,
   direction: initialDirection,
   previousDirection: initialDirection,
@@ -63,9 +67,9 @@ const initialState = {
   lives: initialNoOfLives,
   points: initialPoints,
   snakeLength: initialSnakeLength,
-  bricks: initialBrics,
   wasKilled: initialWasKilled,
 };
+
 type SnakeState = typeof initialState;
 
 const resetState = (state: SnakeState,
@@ -79,8 +83,7 @@ const resetState = (state: SnakeState,
       state.lives = initialNoOfLives;
       state.points = initialPoints;
       state.snakeLength = initialSnakeLength;
-      state.bricks = initialBrics;
-      state.bricksU = initialBricksU(size);
+      state.bricks = initialBricks(size);
       state.clearedBricks = initialClearedBricks;
   }
 }
@@ -138,17 +141,45 @@ const snakeSlice = createSlice({
         state.level -= 1;
       }
     },
+    snakeResize: (state, action: PayloadAction<ColumnsAndRowsI>) =>{
+      const size = action.payload;
+      // Bricks is and arrray of arrays
+      // initialized to an empty array or arrays
+      const noOfBricksColumns = state.bricks.length;
+      const noOfBricksRows = noOfBricksColumns > 0 ?
+        state.bricks[0].length : 0;
+
+      if (size.numberOfColumns >= noOfBricksColumns + offset
+        && size.numberOfRows >= noOfBricksRows + offset){
+        console.log("rozszerzanie cegielek");
+        const newBricks: Array<Array<boolean>> = initialBricks(size);
+        state.bricks = newBricks
+        .map(
+          (col, col_index) => col
+          .map(
+            (_, row_index) => {
+              if (col_index < noOfBricksColumns
+                && row_index < noOfBricksRows) {
+                return state.bricks[col_index][row_index];
+              } else {
+                return newBricks[col_index][row_index];
+              }
+            })
+        );
+      }
+    },
     snakeReset: (state, action: PayloadAction<ColumnsAndRowsI>) => {
       resetState(state, action.payload, false);
     },
     snakeResetAndResize: (state, action: PayloadAction<ColumnsAndRowsI>) => {
+      console.log("forced reset snake")
       resetState(state, action.payload, true);
     },
     snakeOrientationChanged: (state) => {
       state.previousDirection = pivotCoordinates(state.previousDirection);
       state.direction = pivotCoordinates(state.direction);
       state.body = pivotCoordinatesArray(state.body);
-      state.bricks = pivotCoordinatesArray(state.bricks);
+      // state.bricks = pivotCoordinatesArray(state.bricks);
       state.prize = pivotCoordinates(state.prize);
     },
     move: (state, action: PayloadAction<ColumnsAndRowsI>) => {
@@ -163,11 +194,9 @@ const snakeSlice = createSlice({
       };
       if (isNotPartOfTheWall(newHead, size)
         && !isPartOfSpace(newHead, state.body)) {
-          if (!isPartOfSpace(newHead, state.bricks)
-            && state.bricksU[newHead.column-1][newHead.row-1] === true){
+          if (state.bricks[newHead.column-offset][newHead.row-offset] === true){
             state.points += 1;
-            state.bricks.push(newHead);
-            state.bricksU[newHead.column-1][newHead.row-1] = false;
+            state.bricks[newHead.column-offset][newHead.row-offset] = false;
             state.clearedBricks += 1;
           }
 
@@ -178,10 +207,8 @@ const snakeSlice = createSlice({
             state.points += 25;
             state.body.push(newHead);
             state.prize = getPrize(state.body, state.prize, size);
-          } else if (state.bricks.length === (size.numberOfRows - 2) *
-                                             (size.numberOfColumns - 2)
-                     && state.clearedBricks === (size.numberOfRows - 2) *
-                                                (size.numberOfColumns - 2)){
+          } else if (state.clearedBricks === (size.numberOfRows - offset) *
+                                                (size.numberOfColumns - offset)){
               state.wasKilled = true;
               state.body.push(newHead);
               state.body.shift();
@@ -203,28 +230,28 @@ const snakeSlice = createSlice({
   },
 });
 
-export const getWasKilled = (state: RootState) => state.snake.wasKilled;
-export const getBricks = (state: RootState) => state.snake
-  .bricksU
+export const getWasKilled = (state: RootState): boolean => state.snake.wasKilled;
+export const getBricks = (state: RootState): Array<Coordinates> => state.snake
+  .bricks
   .map(
     (col, col_index) => col
     .map(
       (row, row_index) => {
         if (!row) {
-          return {column: col_index + 2, row: row_index + 2 };
+          return {column: col_index + offset, row: row_index + offset };
         } else {
           return [];
         }
       }).flat()
   ).flat();
-export const getNoOfPoints = (state: RootState) => state.snake.points;
-export const getNoOfLives = (state: RootState) => state.snake.lives;
-export const getSnakeHead = (state: RootState) => state.snake.body[state.snake.body.length-1];
-export const getSnakeTail = (state: RootState) => state.snake.body[0];
-export const getLevel = (state: RootState) => state.snake.level;
+export const getNoOfPoints = (state: RootState): number => state.snake.points;
+export const getNoOfLives = (state: RootState): number => state.snake.lives;
+export const getSnakeHead = (state: RootState): Coordinates => state.snake.body[state.snake.body.length-1];
+export const getSnakeTail = (state: RootState): Coordinates => state.snake.body[0];
+export const getLevel = (state: RootState): number => state.snake.level;
 export const {
   changeDirection, levelUp, snakeReset, setWasKilled,
   levelDown, snakeResetAndResize,
-  snakeOrientationChanged,
+  snakeOrientationChanged, snakeResize,
   move, } = snakeSlice.actions;
 export default snakeSlice.reducer;

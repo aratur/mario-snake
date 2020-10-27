@@ -4,7 +4,7 @@ import gridReducer, {
   updateTailAndHeadAndPrize, gridReset } from './gridSlice';
 import snakeReducer,
   { getSnakeHead, getSnakeTail,
-    getWasKilled,
+    getWasKilled, snakeResize,
     snakeResetAndResize, snakeOrientationChanged,
     move, snakeReset, getBricks } from './snakeSlice';
 import sizeReducer,
@@ -87,7 +87,7 @@ export const changeNumberOfColumnsAndRowsThunk = (
       // size is larger in at least one dimension
       // and not smaller in the other one
       // reset Snake location - don't restart the game
-      dispatch(snakeReset(newSize));
+      dispatch(snakeResize(newSize));
     } else if (newSize.numberOfColumns === oldSize.numberOfRows
       && newSize.numberOfRows === oldSize.numberOfColumns && !force) {
       // This should be true if screen was rotated but rarely is, as on mobile
@@ -100,6 +100,7 @@ export const changeNumberOfColumnsAndRowsThunk = (
       dispatch(snakeResetAndResize(newSize));
     }
     const bricks = getBricks(getState());
+    //console.log(bricks);
     dispatch(gridReset({ bricks, size: newSize }));
   }
 }
