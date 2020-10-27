@@ -3,7 +3,6 @@ import {useDispatch} from 'react-redux';
 import { changeNumberOfColumnsAndRowsThunk } from './store/store';
 
 const ResizeHandler = () => {
-  // const [lastChanged, setLastChanged] = useState(Date.now());
   const [timeout, updateTimeout] = useState<NodeJS.Timer | undefined>(undefined);
   const [previousOrientation, setPreviousOrientation] = useState<string | number | undefined>(undefined);
   const waitFor = 300;
@@ -28,7 +27,7 @@ const ResizeHandler = () => {
         if (orientationDiff === 90) {
           // only when the screen was rotated by 90 degrees
           const behavior: 'auto' = 'auto';
-          window.scrollTo({ left: 0, top: 100, behavior });
+          window.scrollTo({ left: 500, top: 500, behavior });
           window.scrollTo({ left: 0, top: 0, behavior });
           setPreviousOrientation(window.orientation);
         }
@@ -48,7 +47,6 @@ const ResizeHandler = () => {
     }
   }, [handleResizeEvent, previousOrientation]);
   return null;
-  // window.orientation + "." + previousHeight + "." + window.innerHeight + "." + window.screen.availHeight + "." + window.screen.height + "." + window.screenTop}
 }
 
 export default ResizeHandler;

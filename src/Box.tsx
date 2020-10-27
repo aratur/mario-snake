@@ -24,7 +24,6 @@ const Box = ({ column, row }: Coordinates) => {
     return undefined;
   }
 
-  // const boxStyle = { width: '30px', height: '30px', padding: 0 }
   return (
     <td>
       {getContent()}

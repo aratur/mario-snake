@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTypedSelector } from './store/TypedUtils';
 import { getNoOfLives } from './store/snakeSlice';
 import mushroom from './img/mario-mushroom.png';
@@ -11,9 +11,7 @@ const StatusBar = ({ numberOfColumns }: Props) => {
   const disabled: number = 3 - lives;
   const points: number = 6;
   const space: number = numberOfColumns - lives - disabled - points;
-
-  return (
-    <tr>
+  const renderMemo = useMemo(() => <tr>
       {Array(lives).fill(0).map((_, index) =>
         <td key={"mushroom." + String(index)}>
           <img src={mushroom} alt="L" className="points" />
@@ -25,7 +23,10 @@ const StatusBar = ({ numberOfColumns }: Props) => {
       {Array(space).fill(0).map((_, index) => <td
         key={"space." + String(index)} />)}
       <Points />
-    </tr>
+    </tr>, [lives, disabled, space]);
+
+  return (
+    <>{renderMemo}</>
   );
 };
 

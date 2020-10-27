@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTypedSelector } from './store/TypedUtils';
 import { getNoOfPoints } from './store/snakeSlice';
 import coin from './img/mario-coin.png';
@@ -13,15 +13,15 @@ import i7 from './img/7.png';
 import i8 from './img/8.png';
 import i9 from './img/9.png';
 
+const paddingZeros = (input: number, padding: number) => {
+    const inputStr = String(input);
+    return Array(padding)
+      .fill(0).map((_, index) => (padding-index) <= inputStr.length ? inputStr[index - padding + inputStr.length] : 0);
+}
+
 const Points = () => {
   const points: number = useTypedSelector(getNoOfPoints);
-  const paddingZeros = (input: number, padding: number) => {
-      const inputStr = String(input);
-      return Array(padding)
-        .fill(0).map((_, index) => (padding-index) <= inputStr.length ? inputStr[index - padding + inputStr.length] : 0);
-  }
-
-  const renderNumbers = () => {
+  const renderNumbers = useMemo(() => {
     const digits = 4;
     const paddedPoints = paddingZeros(points, digits);
     return paddedPoints.map(digit => {
@@ -39,19 +39,17 @@ const Points = () => {
       default: return { src: i0, digit };
     }}).map((picture, index)=> {
       return <td key={`td.pos.${index}.no.${picture.digit}`}>
-      <img className="points" src={picture.src} alt={String(picture.digit)}
-        key={`img.pos.${index}.no.${picture.digit}`} /></td>});
-  };
+        <img className="points" src={picture.src} alt={String(picture.digit)}
+          key={`img.pos.${index}.no.${picture.digit}`} /></td>});
+  }, [points]);
 
-  return (
-    <>
-    <td key="coin">
-      <img className="points" src={coin} alt="No of points" />
-    </td>
-    <td>X</td>
-    {renderNumbers()}
-    </>
-  );
+  return <>
+      <td key="coin">
+        <img className="points" src={coin} alt="No of points" />
+      </td>
+      <td>X</td>
+      {renderNumbers}
+    </>;
 };
 
 export default Points;

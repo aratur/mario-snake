@@ -106,7 +106,6 @@ const gridSlice = createSlice({
       }
 
       const oldPrizeId = state.ids.find(id => state.entities[id]?.isPrize)
-      console.log(oldPrize, newPrize);
       if (oldPrize.column !== newPrize.column
         || oldPrize.row !== newPrize.row
         || typeof oldPrizeId === "undefined") {

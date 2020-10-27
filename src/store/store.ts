@@ -1,4 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
+import thunk from 'redux-thunk';
 import gridReducer, {
   updateTailAndHeadAndPrize, gridReset } from './gridSlice';
 import snakeReducer,
@@ -17,19 +18,15 @@ const store = configureStore({
     snake: snakeReducer,
     size: sizeReducer,
   },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: false,
-      immutableStateInvariant: false,
-      serializableStateInvariant: false,
-    }),
+  middleware: [thunk]
 });
 
 type DispatchType = typeof store.dispatch;
 type GetStoreType = typeof store.getState;
 
 export type RootState = ReturnType<typeof store.getState>
-
+const values: Array<number> = [];
+const getAverage = () => Math.floor(values.reduce((pv, cv) => pv+cv, 0)/values.length);
 export const coputeStateThunk = (startTime: number) => {
   return async (dispatch: DispatchType, getState: GetStoreType) => {
     const wasKilled = getWasKilled(getState());
@@ -47,7 +44,8 @@ export const coputeStateThunk = (startTime: number) => {
     dispatch(move({size, startTime, initTime: Date.now()}));
 
     const moveA =  Date.now() - startTime;
-    await new Promise(r => setTimeout(r, 70-moveA));
+    values.push(moveA);
+    await new Promise(r => setTimeout(r, 20-moveA));
     const moveB =  Date.now() - startTime;
 
     // update Head and Taild on the grid
@@ -57,10 +55,10 @@ export const coputeStateThunk = (startTime: number) => {
 
     dispatch(updateTailAndHeadAndPrize({oldTail,newTail, oldHead,newHead, oldPrize, newPrize}));
     const headTailT = Date.now() - moveB - startTime;
-    await new Promise(r => setTimeout(r, 50-headTailT));
+    values.push(headTailT);
+    await new Promise(r => setTimeout(r, 20-headTailT));
     // check if the Prize has changed if yes updete on the grid
-    console.log("total:", Date.now() - startTime,
-    "move:" + moveA, moveB, "headTail:" + headTailT,);
+    console.log("total:", Date.now() - startTime, "move:" + moveA, moveB, "headTail:" + headTailT, getAverage() );
   }
 }
 

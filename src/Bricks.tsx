@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import Box from './Box';
 
 type Props = {
@@ -6,8 +6,8 @@ type Props = {
   numberOfColumns: number
 }
 const Bricks = ({ numberOfRows, numberOfColumns } : Props) => {
-  return <>
-    {Array(numberOfRows)
+  // saves 30 ms after each dispatch
+  const memoRenderBricks = useMemo(() => Array(numberOfRows)
     .fill(0)
     .map((_, index) => index + 1)
     .map((row) => (
@@ -19,9 +19,14 @@ const Bricks = ({ numberOfRows, numberOfColumns } : Props) => {
           column={column}
           row={row}
           key={ String(column * 100 + row) }
-        />)}
-      </tr>
-    ))}
+          />)}
+          </tr>
+        )
+      ), [numberOfRows, numberOfColumns]
+  );
+
+  return <>
+    {memoRenderBricks}
     </>
 }
 
