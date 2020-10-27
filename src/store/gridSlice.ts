@@ -59,6 +59,11 @@ type HeadAndTail = {
   oldPrize: Coordinates,
   newPrize: Coordinates,
 }
+
+let previousHeadId: number | undefined = undefined;
+let previousTailId: number | undefined = undefined;
+let previousPrizeId: number | undefined = undefined;
+
 const gridSlice = createSlice({
   name: 'grid',
   initialState: gridState,
@@ -66,14 +71,23 @@ const gridSlice = createSlice({
     gridReset: (state, action: PayloadAction<GridInput>) => {
       gridAdapter.removeAll(state);
       createGrid(state, action.payload);
+      previousHeadId = undefined;
+      previousTailId = undefined;
+      previousPrizeId = undefined;
     },
     updateTailAndHeadAndPrize: (state, action: PayloadAction<HeadAndTail>) => {
+
       const { oldTail, newTail,
         oldHead, newHead,
         oldPrize, newPrize  } = action.payload;
 
       if (oldTail.column !== newTail.column || oldTail.row !== newTail.row){
-        const oldTailId = state.ids.find(id => state.entities[id]?.isTail)
+        let oldTailId = undefined;
+        if (previousTailId) {
+          oldTailId = previousTailId;
+        } else {
+          oldTailId = state.ids.find(id => state.entities[id]?.isTail)
+        }
         if (oldTailId){
           const oldTailEntity = state.entities[oldTailId];
           if (oldTailEntity) {
@@ -81,6 +95,7 @@ const gridSlice = createSlice({
           }
         }
         const newTailId = id(newTail);
+        previousTailId = newTailId;
         const newTailEntity = state.entities[newTailId];
         if (newTailEntity) {
           newTailEntity.isTail = true;
@@ -89,7 +104,12 @@ const gridSlice = createSlice({
       }
 
       if (oldHead.column !== newHead.column || oldHead.row !== newHead.row){
-        const oldHeadId = state.ids.find(id => state.entities[id]?.isHead)
+        let oldHeadId = undefined;
+        if (previousHeadId) {
+          oldHeadId = previousHeadId;
+        } else {
+          oldHeadId = state.ids.find(id => state.entities[id]?.isHead)
+        }
         if (oldHeadId){
           const oldHeadEntity = state.entities[oldHeadId];
           if (oldHeadEntity) {
@@ -98,6 +118,7 @@ const gridSlice = createSlice({
           }
         }
         const newHeadId = id(newHead);
+        previousHeadId = newHeadId;
         const newHeadEntity = state.entities[newHeadId];
         if (newHeadEntity) {
           newHeadEntity.isHead = true;
@@ -105,21 +126,27 @@ const gridSlice = createSlice({
         };
       }
 
-      const oldPrizeId = state.ids.find(id => state.entities[id]?.isPrize)
+      let oldPrizeId = undefined;
+      if (previousPrizeId) {
+        oldPrizeId = previousPrizeId;
+      } else {
+        oldPrizeId = state.ids.find(id => state.entities[id]?.isPrize);
+      }
       if (oldPrize.column !== newPrize.column
         || oldPrize.row !== newPrize.row
         || typeof oldPrizeId === "undefined") {
-        // dispatch(setPreviousPrize(newPrize));
         if (oldPrizeId){
           const oldPrizeEntity = state.entities[oldPrizeId];
           if (oldPrizeEntity) oldPrizeEntity.isPrize = false;
         }
         const newPrizeId = id(newPrize);
+        previousPrizeId = newPrizeId;
         const newPrizeEntity = state.entities[newPrizeId];
         if (newPrizeEntity) {
           newPrizeEntity.isPrize = true;
         }
       }
+
     },
   },
 });

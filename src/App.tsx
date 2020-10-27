@@ -40,7 +40,7 @@ function App() {
     if (componentDidMount) {
       dispatch(changeNumberOfColumnsAndRowsThunk(
         window.innerHeight,
-        window.innerWidth));
+        window.innerWidth, true));
       setComponentDidMount(false);
     } else if (wasKilled && isRunning){
       stop();
