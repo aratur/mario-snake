@@ -1,9 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit';
 import thunk from 'redux-thunk';
 import gridReducer, {
-  updateTailAndHeadAndPrize, gridReset } from './gridSlice';
+  updateTailAndHeadAndPrize, gridReset, gridResize } from './gridSlice';
 import snakeReducer,
-  { getSnakeHead, getSnakeTail,
+  { getSnakeHead, getSnakeTail, getSnakeBody,
     getWasKilled, snakeResize,
     snakeResetAndResize, snakeOrientationChanged,
     move, snakeReset, getBricks } from './snakeSlice';
@@ -88,20 +88,24 @@ export const changeNumberOfColumnsAndRowsThunk = (
       // and not smaller in the other one
       // reset Snake location - don't restart the game
       dispatch(snakeResize(newSize));
+      const bricks = getBricks(getState());
+      dispatch(gridReset({ bricks, size: newSize }));
     } else if (newSize.numberOfColumns === oldSize.numberOfRows
       && newSize.numberOfRows === oldSize.numberOfColumns && !force) {
       // This should be true if screen was rotated but rarely is, as on mobile
       // there is a different amount of available space depending on an aspect.
       // It may work a bit better in a full screen mode.
-      dispatch(snakeOrientationChanged());
+      dispatch(snakeOrientationChanged(newSize));
+      const bricks = getBricks(getState());
+      const body = getSnakeBody(getState());
+      dispatch(gridResize({ bricks, size: newSize , body}));
       // console.log('screen orientation changed')
     } else {
       // console.log('other restart all');
       dispatch(snakeResetAndResize(newSize));
+      const bricks = getBricks(getState());
+      dispatch(gridReset({ bricks, size: newSize }));
     }
-    const bricks = getBricks(getState());
-    //console.log(bricks);
-    dispatch(gridReset({ bricks, size: newSize }));
   }
 }
 

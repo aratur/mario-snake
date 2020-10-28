@@ -23,8 +23,23 @@ type GridInput = {
   bricks: Array<Coordinates>,
   size: ColumnsAndRowsI
 }
-const createGrid = (state: GridState, input: GridInput) => {
-  Array(input.size.numberOfColumns)
+const createGrid = (
+  state: GridState, input: GridInput, body: Array<Coordinates> = []
+  ) => {
+  let bodyM: Array<Coordinates> = [ ...body]
+  const dummy = { column: -1, row: -1};
+  let head = dummy;
+  if (body.length > 0) {
+    head = bodyM.pop() || dummy;
+  }
+  let tail = head;
+  if (body.length > 0) {
+    tail = bodyM.shift() || head;
+  };
+  const bodyLookup = (find: Coordinates) => {
+    return bodyM.length > 0 ? isPartOfSpace(find, bodyM) : false
+  }
+  return Array(input.size.numberOfColumns)
     .fill(0)
     .map((_, index) => index + 1)
     .forEach((column) => {
@@ -35,9 +50,9 @@ const createGrid = (state: GridState, input: GridInput) => {
         gridAdapter.addOne(state, {
           column,
           row,
-          isSnake: false,
-          isHead: false,
-          isTail: false,
+          isSnake: bodyLookup({column, row}),
+          isHead: column === head.column && row === head.row,
+          isTail: column === tail.column && row === tail.row,
           isPrize: false,
           isBrick: !isPartOfSpace({column, row}, input.bricks),
           isWall: row - 1 === 0
@@ -64,6 +79,12 @@ let previousHeadId: number | undefined = undefined;
 let previousTailId: number | undefined = undefined;
 let previousPrizeId: number | undefined = undefined;
 
+type GridRotateInput = {
+  bricks: Array<Coordinates>,
+  size: ColumnsAndRowsI,
+  body: Array<Coordinates>,
+}
+
 const gridSlice = createSlice({
   name: 'grid',
   initialState: gridState,
@@ -71,6 +92,14 @@ const gridSlice = createSlice({
     gridReset: (state, action: PayloadAction<GridInput>) => {
       gridAdapter.removeAll(state);
       createGrid(state, action.payload);
+      previousHeadId = undefined;
+      previousTailId = undefined;
+      previousPrizeId = undefined;
+    },
+    gridResize: (state, action: PayloadAction<GridRotateInput>) => {
+      gridAdapter.removeAll(state);
+      const { bricks, size, body } = action.payload;
+      createGrid(state, { bricks, size} , body);
       previousHeadId = undefined;
       previousTailId = undefined;
       previousPrizeId = undefined;
@@ -158,6 +187,6 @@ const gridSelectors = gridAdapter.getSelectors<RootState>(
 export const selectById = (
     state: RootState, column: number, row: number
   ) => gridSelectors.selectById(state, column * 100 + row);
-export const { updateTailAndHeadAndPrize,
+export const { updateTailAndHeadAndPrize, gridResize,
   gridReset } = gridSlice.actions;
 export default gridSlice.reducer;
