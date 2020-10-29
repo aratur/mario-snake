@@ -29,13 +29,13 @@ const createGrid = (
   let bodyM: Array<Coordinates> = [ ...body]
   const dummy = { column: -1, row: -1};
   let head = dummy;
-  if (body.length > 0) {
+  let tail = dummy;
+  if (body.length === 1) {
+    bodyM[0] = dummy;
+  } else if (body.length > 0) {
     head = bodyM.pop() || dummy;
-  }
-  let tail = head;
-  if (body.length > 0) {
     tail = bodyM.shift() || head;
-  };
+  }
   const bodyLookup = (find: Coordinates) => {
     return bodyM.length > 0 ? isPartOfSpace(find, bodyM) : false
   }
