@@ -222,9 +222,8 @@ const snakeSlice = createSlice({
               state.body.push(newHead);
               state.body.shift();
               state.bricks = initialBricks(size);
-              // state.clearedBricks = initialClearedBricks;
           } else {
-            // state.body.push(newHead);
+            state.body.push(newHead);
             state.body.shift();
           }
       } else {
