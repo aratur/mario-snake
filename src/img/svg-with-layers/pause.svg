@@ -10,11 +10,11 @@
    width="1em"
    height="1em"
    viewBox="0 0 16 16"
-   class="bi bi-caret-right-square-fill"
+   class="bi bi-pause-fill"
    fill="currentColor"
    version="1.1"
    id="svg4"
-   sodipodi:docname="play.svg"
+   sodipodi:docname="pause.svg"
    inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)">
   <metadata
      id="metadata10">
@@ -38,26 +38,29 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1831"
-     inkscape:window-height="985"
+     inkscape:window-width="1920"
+     inkscape:window-height="1043"
      id="namedview6"
      showgrid="false"
+     inkscape:snap-page="true"
      inkscape:zoom="54.375"
      inkscape:cx="8"
-     inkscape:cy="6.5287356"
+     inkscape:cy="7.2643678"
      inkscape:window-x="0"
      inkscape:window-y="0"
-     inkscape:window-maximized="0"
+     inkscape:window-maximized="1"
      inkscape:current-layer="svg4" />
-  <rect
-     style="fill:#fefdfd;stroke-width:3.40157;stroke-linecap:round"
-     id="rect835"
-     width="11.341246"
-     height="11.277433"
-     x="2.1811905"
-     y="2.2456772" />
+  <g
+     style="fill:currentColor"
+     id="g846">
+    <path
+       fill-rule="evenodd"
+       d="M 0,2 C 0,0.8954305 0.8954305,0 2,0 h 12 c 1.104569,0 2,0.8954305 2,2 v 12 c 0,1.104569 -0.895431,2 -2,2 H 2 C 0.8954305,16 0,15.104569 0,14 Z"
+       id="path835"
+       sodipodi:nodetypes="sssssssss" />
+  </g>
   <path
-     fill-rule="evenodd"
-     d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm5.5 10a.5.5 0 0 0 .832.374l4.5-4a.5.5 0 0 0 0-.748l-4.5-4A.5.5 0 0 0 5.5 4v8z"
-     id="path2" />
+     d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5zm5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5z"
+     id="path2"
+     style="fill:#fefdfd;fill-opacity:1" />
 </svg>

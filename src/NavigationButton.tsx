@@ -8,10 +8,10 @@ import arrowUp from './img/arrow-up.svg';
 import arrowDown from './img/arrow-down.svg';
 import arrowLeft from './img/arrow-left.svg';
 import arrowRight from './img/arrow-right.svg';
-import play from './img/play.png';
+import play from './img/play.svg';
 import pause from './img/pause.svg';
-import slowerImg from './img/slower.png';
-import fasterImg from './img/faster.png';
+import slowerImg from './img/slower.svg';
+import fasterImg from './img/faster.svg';
 
 type Props = {
   start: () => void,
@@ -32,6 +32,7 @@ const NavigationButton = ({start, stop, name} : Props) => {
   const handleImageClicked = () => {};
 
   const handleButtonClicked = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
     const pressed = event.target as HTMLElement;
     let name = "unknown";
     if (pressed.hasAttribute("alt")) {
