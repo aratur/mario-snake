@@ -254,6 +254,12 @@ export const getBricks = (state: RootState): Array<Coordinates> => state.snake
       }).flat()
   ).flat();
 export const getNoOfPoints = (state: RootState): number => state.snake.points;
+export const getDirection = (state: RootState): string => {
+  if (state.snake.direction === directions.Left) {
+    return "Left";
+  } else
+  return "Right";
+}
 export const getNoOfLives = (state: RootState): number => state.snake.lives;
 export const getSnakeBody = (state: RootState): Array<Coordinates> => state.snake.body;
 export const getSnakeHead = (state: RootState): Coordinates => state.snake.body[state.snake.body.length-1];

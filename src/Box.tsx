@@ -1,12 +1,14 @@
 import React from 'react';
 import { useTypedSelector } from './store/TypedUtils';
 import { selectById } from './store/gridSlice';
+import { getDirection } from './store/snakeSlice';
 import Grid from './model/Grid';
 import Coordinates from './model/Coordinates';
 import wall from './img/mario-wall.png';
 import bricks from './img/mario-bricks.png';
 import coin from './img/mario-coin.png';
 import head from './img/mario.png';
+import headLeft from './img/mario-left.png';
 import body from './img/bag.png';
 
 // let previousTime = 999999;
@@ -26,13 +28,13 @@ import body from './img/bag.png';
 
 const Box = ({ column, row }: Coordinates) => {
   const gridItem: Grid | undefined = useTypedSelector(state => selectById(state, column, row));
-
+  const direction: string = useTypedSelector(getDirection);
   const getContent = () => {
     if (gridItem){
       if (gridItem.isWall) return <img src={wall} alt="W" className="board" />;
       if (gridItem.isHead) {
         // measurePerformance(Date.now())
-        return <img src={head} alt="H" className="board" />;
+        return <img src={direction === "Left" ? headLeft : head} alt="H" className="board" />;
       }
       if (gridItem.isTail) return <img src={body} alt="T" className="board" />;;
       if (gridItem.isSnake) return <img src={body} alt="S" className="board" />;
