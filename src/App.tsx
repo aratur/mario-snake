@@ -12,7 +12,6 @@ import Bricks from './Bricks';
 import StatusBar from './StatusBar';
 import Navigation from './Navigation';
 import MoveOnInterval from './MoveOnInterval';
-import ResizeHandler from './ResizeHandler';
 import KeyboardControlls from './KeyboardControlls';
 
 function App() {
@@ -56,7 +55,6 @@ function App() {
       dispatchStart={dispatchStart}
       stop={stop}
     />
-    <ResizeHandler />
     {isRunning ? <MoveOnInterval level={level}/> : null}
     <div className="w3-cell-row">
       <div className="w3-cell w3-margin-top w3-center w3-mobile w3-hide-small w3-cell-middle" >

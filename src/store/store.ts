@@ -11,12 +11,14 @@ import sizeReducer,
   { changeNumberOfColumnsAndRows,
   getSize, ColumnsAndRowsI } from './columnsAndRowsSlice';
 import Coordinates from '../model/Coordinates';
+import guiReducer from './guiSlice';
 
 const store = configureStore({
   reducer: {
     grid: gridReducer,
     snake: snakeReducer,
     size: sizeReducer,
+    gui: guiReducer,
   },
   middleware: [thunk]
 });

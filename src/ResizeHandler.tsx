@@ -1,17 +1,23 @@
-import {useEffect, useState, useCallback} from 'react';
-import {useDispatch} from 'react-redux';
+import React, {useEffect, useState, useCallback} from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getIsScreenLocked, setIsScreenLocked } from './store/guiSlice';
 import { changeNumberOfColumnsAndRowsThunk } from './store/store';
+import screenLock from './img/screen-lock.svg';
+import screenUnlock from './img/screen-unlock.svg';
 
 const ResizeHandler = () => {
   const [timeout, updateTimeout] = useState<NodeJS.Timer | undefined>(undefined);
   const [previousOrientation, setPreviousOrientation] = useState<string | number | undefined>(undefined);
   const waitFor = 300;
   const dispatch = useDispatch();
+  const isScreenLocked = useSelector(getIsScreenLocked);
 
   const handleResizeAfterTimeout = useCallback(() => {
-    updateTimeout(undefined);
-    dispatch(changeNumberOfColumnsAndRowsThunk(window.innerHeight, window.innerWidth));
-  }, [dispatch]);
+    if (isScreenLocked === false){
+      updateTimeout(undefined);
+      dispatch(changeNumberOfColumnsAndRowsThunk(window.innerHeight, window.innerWidth));
+    }
+  }, [isScreenLocked, dispatch]);
 
   const handleResizeEvent = useCallback((event: UIEvent) => {
     event.stopPropagation();
@@ -26,9 +32,6 @@ const ResizeHandler = () => {
         // visible screen elements taking up the screen space
         if (orientationDiff === 90) {
           // only when the screen was rotated by 90 degrees
-          const behavior: 'auto' = 'auto';
-          window.scrollTo({ left: 500, top: 500, behavior });
-          window.scrollTo({ left: 0, top: 0, behavior });
           setPreviousOrientation(window.orientation);
         }
       }
@@ -36,17 +39,37 @@ const ResizeHandler = () => {
     updateTimeout(setTimeout(handleResizeAfterTimeout, waitFor));
   }, [timeout, handleResizeAfterTimeout, previousOrientation]);
 
+  const handleLockClick = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    dispatch(setIsScreenLocked(!isScreenLocked));
+  }
+
   useEffect(() => {
-    if (typeof previousOrientation === "undefined"
-      && typeof window.orientation !== "undefined") {
-      setPreviousOrientation(window.orientation);
-    }
-    window.addEventListener("resize", handleResizeEvent);
-    return () => {
+    console.log("useEffect", isScreenLocked);
+    if (isScreenLocked === false) {
+      if (typeof previousOrientation === "undefined"
+        && typeof window.orientation !== "undefined") {
+        setPreviousOrientation(window.orientation);
+      }
+      window.addEventListener("resize", handleResizeEvent);
+      return () => {
+        window.removeEventListener('resize', handleResizeEvent);
+      }
+    } else {
       window.removeEventListener('resize', handleResizeEvent);
     }
-  }, [handleResizeEvent, previousOrientation]);
-  return null;
+  }, [isScreenLocked, handleResizeEvent, previousOrientation]);
+
+
+  return <button
+    className="navigation"
+    onClick={handleLockClick}
+    ><img
+      onClick={handleLockClick}
+      className="navigation"
+      src={isScreenLocked ? screenUnlock : screenLock}
+      alt={'fullscreen'}
+    /></button>;
 }
 
 export default ResizeHandler;

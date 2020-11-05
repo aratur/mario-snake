@@ -2,6 +2,7 @@ import React, { useMemo, useCallback }  from 'react';
 import fireball from './img/fireball.png';
 import NavigationButton from './NavigationButton';
 import FullScreenButton from './FullScreenButton';
+import ResizeHandler from './ResizeHandler';
 
 type Props = {
   start: () => void,
@@ -20,9 +21,10 @@ const Navigation = ( { start, stop, isRunning } : Props) => {
   const renderSettings = useMemo(() => <>
     {button('Slower')}
     {button('Faster')}
+    {isRunning ? button('Stop') : button('Start')}
     <br />
     <FullScreenButton />
-    {isRunning ? button('Stop') : button('Start')}
+    <ResizeHandler />
   </>, [isRunning, button]);
 
   const memoRender = useMemo(()=> <>
