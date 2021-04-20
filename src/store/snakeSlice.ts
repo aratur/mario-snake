@@ -221,6 +221,7 @@ const snakeSlice = createSlice({
               state.wasKilled = true;
               state.body.push(newHead);
               state.body.shift();
+              state.clearedBricks = initialClearedBricks;
               state.bricks = initialBricks(size);
           } else {
             state.body.push(newHead);

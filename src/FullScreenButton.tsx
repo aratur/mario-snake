@@ -4,8 +4,7 @@ import fullscreenEnable from './img/fullscreen-enable.svg';
 import fullscreenExit from './img/fullscreen-exit.svg';
 
 const FullScreenButton = () => {
-  // const eScreenfull: Screenfull | undefined =
-    // screenfull.isEnabled ? screenfull : undefined;
+
   const checkIsFullscreen = (): boolean => {
     if (screenfull.isEnabled) return screenfull.isFullscreen
     return false
