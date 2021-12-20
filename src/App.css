@@ -1,28 +1,49 @@
+
+/*  override https://www.w3schools.com/w3css/w3css_responsive.asp
+
+W3.CSS uses the DP size of a screen
+
+Breakpoints defined by W3.CSS:
+  W3.CSS will treat an iPhone 6 with a resolution of 750 x 1334 pixels as a small screen of 375 x 667 pixels DP.
+  -small screens are less than 601 pixels DP
+  -medium screens are less than 993 pixels DP
+*/
 table {
   border-spacing: 0px;
 }
 
 td {
-  line-height: 1rem;
+  line-height: 1em;
   padding: 0px;
   white-space: nowrap;
-  text-align: center;
   color: white;
 }
 
 img.points {
   padding: 3px;
-  height: 25px;
   width: 25px;
+  height: 25px;
 }
 
 img.board {
-  height: 25px;
   width: 25px;
+  height: 20px;
 }
 
-img.navigation {
+/* relative tile sizes for large screens */
+@media (min-width: 993px) {
+  img.points {
+    width: 4vmin;
+    height: 4vmin;
+  }
+  img.board {
+    width: 4vmin;
+    height: 4vmin;
+  }
+}
 
+
+img.navigation {
   height: 50px;
   width: 50px;
 }
