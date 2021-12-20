@@ -24,7 +24,7 @@ function App() {
   const [componentDidMount, setComponentDidMount] = useState(true);
 
   const dispatchStart = useCallback(():void => {
-    console.log("dispatchStart", wasKilled);
+    // console.log("dispatchStart", wasKilled);
     if (wasKilled) {
       dispatch(resetStateThunk());
     }

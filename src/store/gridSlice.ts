@@ -1,12 +1,13 @@
 /* eslint "no-param-reassign": 0 */
 import {
   createEntityAdapter,
-  createSlice, PayloadAction,
+  createSlice, EntityState, PayloadAction,
 } from '@reduxjs/toolkit';
 import { RootState } from './store';
 import Grid from '../model/Grid';
 import Coordinates from '../model/Coordinates';
 import { ColumnsAndRowsI } from './columnsAndRowsSlice';
+import { WritableDraft } from 'immer/dist/internal';
 
 const gridAdapter = createEntityAdapter<Grid>({
   selectId: (item) => item.column * 100 + item.row,
@@ -85,6 +86,79 @@ type GridRotateInput = {
   body: Array<Coordinates>,
 }
 
+
+const updateTail = (oldTail: Coordinates, newTail :Coordinates, state: WritableDraft<EntityState<Grid>>) => {
+  if (oldTail.column !== newTail.column || oldTail.row !== newTail.row){
+    let oldTailId = undefined;
+    if (previousTailId) {
+      oldTailId = previousTailId;
+    } else {
+      oldTailId = state.ids.find(id => state.entities[id]?.isTail)
+    }
+    if (oldTailId){
+      const oldTailEntity = state.entities[oldTailId];
+      if (oldTailEntity) {
+        oldTailEntity.isTail = false;
+      }
+    }
+    const newTailId = id(newTail);
+    previousTailId = newTailId;
+    const newTailEntity = state.entities[newTailId];
+    if (newTailEntity) {
+      newTailEntity.isTail = true;
+      newTailEntity.isSnake = false;
+    }
+  }
+}
+
+const updateHead = (oldHead: Coordinates, newHead: Coordinates, state: WritableDraft<EntityState<Grid>>) => {
+  if (oldHead.column !== newHead.column || oldHead.row !== newHead.row){
+    let oldHeadId = undefined;
+    if (previousHeadId) {
+      oldHeadId = previousHeadId;
+    } else {
+      oldHeadId = state.ids.find(id => state.entities[id]?.isHead)
+    }
+    if (oldHeadId){
+      const oldHeadEntity = state.entities[oldHeadId];
+      if (oldHeadEntity) {
+        oldHeadEntity.isHead = false;
+        oldHeadEntity.isSnake = true;
+      }
+    }
+    const newHeadId = id(newHead);
+    previousHeadId = newHeadId;
+    const newHeadEntity = state.entities[newHeadId];
+    if (newHeadEntity) {
+      newHeadEntity.isHead = true;
+      newHeadEntity.isBrick = false;
+    };
+  }
+}
+
+const updatePrize = (oldPrize: Coordinates, newPrize: Coordinates, state: WritableDraft<EntityState<Grid>>) => {
+  let oldPrizeId = undefined;
+  if (previousPrizeId) {
+    oldPrizeId = previousPrizeId;
+  } else {
+    oldPrizeId = state.ids.find(id => state.entities[id]?.isPrize);
+  }
+  if (oldPrize.column !== newPrize.column
+    || oldPrize.row !== newPrize.row
+    || typeof oldPrizeId === "undefined") {
+    if (oldPrizeId){
+      const oldPrizeEntity = state.entities[oldPrizeId];
+      if (oldPrizeEntity) oldPrizeEntity.isPrize = false;
+    }
+    const newPrizeId = id(newPrize);
+    previousPrizeId = newPrizeId;
+    const newPrizeEntity = state.entities[newPrizeId];
+    if (newPrizeEntity) {
+      newPrizeEntity.isPrize = true;
+    }
+  }
+}
+
 const gridSlice = createSlice({
   name: 'grid',
   initialState: gridState,
@@ -105,76 +179,12 @@ const gridSlice = createSlice({
       previousPrizeId = undefined;
     },
     updateTailAndHeadAndPrize: (state, action: PayloadAction<HeadAndTail>) => {
-
       const { oldTail, newTail,
         oldHead, newHead,
         oldPrize, newPrize  } = action.payload;
-
-      if (oldTail.column !== newTail.column || oldTail.row !== newTail.row){
-        let oldTailId = undefined;
-        if (previousTailId) {
-          oldTailId = previousTailId;
-        } else {
-          oldTailId = state.ids.find(id => state.entities[id]?.isTail)
-        }
-        if (oldTailId){
-          const oldTailEntity = state.entities[oldTailId];
-          if (oldTailEntity) {
-            oldTailEntity.isTail = false;
-          }
-        }
-        const newTailId = id(newTail);
-        previousTailId = newTailId;
-        const newTailEntity = state.entities[newTailId];
-        if (newTailEntity) {
-          newTailEntity.isTail = true;
-          newTailEntity.isSnake = false;
-        }
-      }
-
-      if (oldHead.column !== newHead.column || oldHead.row !== newHead.row){
-        let oldHeadId = undefined;
-        if (previousHeadId) {
-          oldHeadId = previousHeadId;
-        } else {
-          oldHeadId = state.ids.find(id => state.entities[id]?.isHead)
-        }
-        if (oldHeadId){
-          const oldHeadEntity = state.entities[oldHeadId];
-          if (oldHeadEntity) {
-            oldHeadEntity.isHead = false;
-            oldHeadEntity.isSnake = true;
-          }
-        }
-        const newHeadId = id(newHead);
-        previousHeadId = newHeadId;
-        const newHeadEntity = state.entities[newHeadId];
-        if (newHeadEntity) {
-          newHeadEntity.isHead = true;
-          newHeadEntity.isBrick = false;
-        };
-      }
-
-      let oldPrizeId = undefined;
-      if (previousPrizeId) {
-        oldPrizeId = previousPrizeId;
-      } else {
-        oldPrizeId = state.ids.find(id => state.entities[id]?.isPrize);
-      }
-      if (oldPrize.column !== newPrize.column
-        || oldPrize.row !== newPrize.row
-        || typeof oldPrizeId === "undefined") {
-        if (oldPrizeId){
-          const oldPrizeEntity = state.entities[oldPrizeId];
-          if (oldPrizeEntity) oldPrizeEntity.isPrize = false;
-        }
-        const newPrizeId = id(newPrize);
-        previousPrizeId = newPrizeId;
-        const newPrizeEntity = state.entities[newPrizeId];
-        if (newPrizeEntity) {
-          newPrizeEntity.isPrize = true;
-        }
-      }
+      updateTail(oldTail, newTail, state);
+      updateHead(oldHead, newHead, state);
+      updatePrize(oldPrize, newPrize, state);
 
     },
   },

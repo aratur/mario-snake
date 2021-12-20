@@ -45,7 +45,7 @@ const columnsAndRowsSlice = createSlice({
 
       const possibleColumns: number = Math.floor(width/colWidth);
       const possibleRows: number = Math.floor(height/rowHeight);
-      console.log(windowWidth, windowHeight, width, height);
+      // console.log(windowWidth, windowHeight, width, height);
 
       if (possibleRows < minNumberOfRows) {
         state.numberOfRows = minNumberOfRows;

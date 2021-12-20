@@ -13,12 +13,11 @@ const FullScreenButton = () => {
   const [isFullscreen, setIsFullscreen] = useState(checkIsFullscreen());
 
   useEffect(() => {
-    if (screenfull.isEnabled) {
-      console.log("FS enable adding event...");
+    if (screenfull.isEnabled) {      
       const eScreenfull: Screenfull = screenfull;
       const handleFullScreenChange = () => {
-        console.log('Am I fullscreen?'
-        , eScreenfull.isFullscreen ? 'Yes' : 'No');
+        // console.log('Am I fullscreen?'
+        // , eScreenfull.isFullscreen ? 'Yes' : 'No');
         if (isFullscreen !== eScreenfull.isFullscreen)
           setIsFullscreen(eScreenfull.isFullscreen);
       }
@@ -28,14 +27,11 @@ const FullScreenButton = () => {
   }, [isFullscreen]);
 
   const handleClick = (event: React.MouseEvent) => {
-    event.stopPropagation();
-    console.log("czy screenfull is enabled ", screenfull.isEnabled);
+    event.stopPropagation();    
     if (screenfull.isEnabled) {
       screenfull.toggle();
     }
   }
-
-  // style={screenfull.isEnabled ? { visibility: 'hidden'} : {}}
 
   return <button
     className="navigation"

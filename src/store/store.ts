@@ -43,9 +43,6 @@ export const coputeStateThunk = () => {
     const oldPrize: Coordinates = getState().snake.prize;
     dispatch(move(size));
 
-    // const moveA =  Date.now() - startTime;
-    // values.push(moveA);
-    // const moveB =  Date.now() - startTime;
 
     // update Head and Taild on the grid
     const newTail: Coordinates = getSnakeTail(getState());
@@ -53,10 +50,6 @@ export const coputeStateThunk = () => {
     const newPrize: Coordinates = getState().snake.prize;
 
     dispatch(updateTailAndHeadAndPrize({oldTail,newTail, oldHead,newHead, oldPrize, newPrize}));
-    // const headTailT = Date.now() - moveB - startTime;
-    // values.push(headTailT);
-    // check if the Prize has changed if yes updete on the grid
-    //console.log("total:", Date.now() - startTime, "move:" + moveA, moveB, "headTail:" + headTailT, getAverage() );
   }
 }
 
@@ -79,11 +72,9 @@ export const changeNumberOfColumnsAndRowsThunk = (
     const oldSize: ColumnsAndRowsI = getSize(getState())
     dispatch(changeNumberOfColumnsAndRows({windowInnerWidth, windowInnerHeight}));
     const newSize: ColumnsAndRowsI = getSize(getState());
-    // console.log(oldSize, newSize);
     if (newSize.numberOfColumns === oldSize.numberOfColumns
       && newSize.numberOfRows === oldSize.numberOfRows && !force){
-      // do nothing
-      // console.log('doing nothing');
+      // do nothing if resolution changed not enough to impact number of Rows or Cols   
     } else if (newSize.numberOfRows >= oldSize.numberOfRows
       && newSize.numberOfColumns >= oldSize.numberOfColumns && !force){
       // size is larger in at least one dimension
@@ -101,9 +92,7 @@ export const changeNumberOfColumnsAndRowsThunk = (
       const bricks = getBricks(getState());
       const body = getSnakeBody(getState());
       dispatch(gridResize({ bricks, size: newSize , body}));
-      // console.log('screen orientation changed')
     } else {
-      // console.log('other restart all');
       dispatch(snakeResetAndResize(newSize));
       const bricks = getBricks(getState());
       dispatch(gridReset({ bricks, size: newSize }));

@@ -45,7 +45,6 @@ const ResizeHandler = () => {
   }
 
   useEffect(() => {
-    console.log("useEffect", isScreenLocked);
     if (isScreenLocked === false) {
       if (typeof previousOrientation === "undefined"
         && typeof window.orientation !== "undefined") {

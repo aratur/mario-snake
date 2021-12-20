@@ -1,9 +1,9 @@
 /* eslint "no-param-reassign": 0 */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from './store';
 import Coordinates from '../model/Coordinates';
 import directions from '../model/Directions';
 import { ColumnsAndRowsI } from './columnsAndRowsSlice';
+import { RootState } from './store';
 
 
 const initialDirection: Coordinates = directions.Right;
@@ -26,7 +26,7 @@ const getNewCoordinates = (size: ColumnsAndRowsI) => {
   };
 };
 
-export const isPartOfSpace = (newCoordinates: Coordinates, body: Array<Coordinates>) =>
+export const isPartOfSnakeBody = (newCoordinates: Coordinates, body: Array<Coordinates>) =>
   body.findIndex(value => value.column === newCoordinates.column
     && value.row === newCoordinates.row) > -1 ? true : false;
 
@@ -35,7 +35,7 @@ const getPrize = (
   oldPrize: Coordinates,
   size: ColumnsAndRowsI) => {
   let newCoordinates: Coordinates = getNewCoordinates(size);
-  while (isPartOfSpace(newCoordinates, body) ||
+  while (isPartOfSnakeBody(newCoordinates, body) ||
     (oldPrize.column === newCoordinates.column
     && oldPrize.row === newCoordinates.row)
   ) {
@@ -162,7 +162,6 @@ const snakeSlice = createSlice({
 
       if (size.numberOfColumns >= noOfBricksColumns + offset
         && size.numberOfRows >= noOfBricksRows + offset){
-        console.log("rozszerzanie cegielek");
         const newBricks: Array<Array<boolean>> = initialBricks(size);
         state.bricks = newBricks
         .map(
@@ -183,7 +182,7 @@ const snakeSlice = createSlice({
       resetState(state, action.payload, false);
     },
     snakeResetAndResize: (state, action: PayloadAction<ColumnsAndRowsI>) => {
-      console.log("forced reset snake")
+      console.log("Game state reset was forced.")
       resetState(state, action.payload, true);
     },
     snakeOrientationChanged: (state, action: PayloadAction<ColumnsAndRowsI>) => {
@@ -202,32 +201,39 @@ const snakeSlice = createSlice({
         row: oldHead.row + state.direction.row
       };
       if (isNotPartOfTheWall(newHead, size)
-        && !isPartOfSpace(newHead, state.body)) {
+        && !isPartOfSnakeBody(newHead, state.body)) {
+          //if Mario's head is on a brick tile, add one point and remove the brick
           if (state.bricks[newHead.column-offset][newHead.row-offset] === true){
             state.points += 1;
             state.bricks[newHead.column-offset][newHead.row-offset] = false;
             state.clearedBricks += 1;
           }
-
+          //Mario, doesn't appear with the body in first step
+          //instead it "emerges" step by step untill all tiles representing the tail are made visible
+          //this condition is need only when new game/level starts or Mario looses a life
           if (state.body.length < state.snakeLength) {
             state.body.push(newHead);
           } else if (newHead.column === state.prize.column
             && newHead.row === state.prize.row ){
+          //in case if Mario hits a Coin 
             state.points += 25;
             state.body.push(newHead);
-            state.prize = getPrize(state.body, state.prize, size);
+            state.prize = getPrize(state.body, state.prize, size);          
           } else if (state.clearedBricks === (size.numberOfRows - offset) *
                                                 (size.numberOfColumns - offset)){
+          //in case if Mario cleared ALL bricks        
               state.wasKilled = true;
               state.body.push(newHead);
               state.body.shift();
               state.clearedBricks = initialClearedBricks;
               state.bricks = initialBricks(size);
           } else {
+          //in case if Mario just moved
             state.body.push(newHead);
             state.body.shift();
           }
       } else {
+        // in case if Maria hit the wall or own tail
         state.snakeLength = state.lives > 0 ? state.body.length : initialSnakeLength;
         if (state.lives > 0) state.lives -= 1;
         state.wasKilled = true;
