@@ -14,44 +14,8 @@
    fill="currentColor"
    version="1.1"
    id="svg8"
-   sodipodi:docname="screen-unlock.svg"
-   inkscape:version="1.0.1 (0767f8302a, 2020-10-17)">
-  <metadata
-     id="metadata14">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <defs
-     id="defs12" />
-  <sodipodi:namedview
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1"
-     objecttolerance="10"
-     gridtolerance="10"
-     guidetolerance="10"
-     inkscape:pageopacity="0"
-     inkscape:pageshadow="2"
-     inkscape:window-width="1920"
-     inkscape:window-height="1043"
-     id="namedview10"
-     showgrid="false"
-     inkscape:zoom="32"
-     inkscape:cx="14.294461"
-     inkscape:cy="8.2074808"
-     inkscape:window-x="0"
-     inkscape:window-y="0"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="svg8"
-     showguides="true"
-     inkscape:guide-bbox="true" />
+>
+
   <path
      style="fill:#c14949;fill-opacity:0.99973303;stroke-width:4.47851;stroke-linecap:round"
      d="m 0.2,15.121875 c 0,0.376644 0.303043,0.679687 0.679687,0.679687 h 14.242188 c 0.376644,0 0.679687,-0.303043 0.679687,-0.679687 V 0.879687 C 15.801562,0.503043 15.498519,0.2 15.121875,0.2 H 0.879687 C 0.503043,0.2 0.2,0.503043 0.2,0.879687 Z"

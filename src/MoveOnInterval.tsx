@@ -9,12 +9,20 @@ const MoveOnInterval = ({ level }: Props) => {
     let cleanup: NodeJS.Timer | undefined;
     // console.log("delay" + 1400/level)
     // https://evanshortiss.com/timers-in-typescript
-    cleanup = setInterval(() => dispatch(coputeStateThunk()), 1400/level);
+
+    cleanup = setInterval(
+      () =>
+        dispatch(
+          // @ts-ignore
+          coputeStateThunk(),
+        ),
+      1400 / level,
+    );
     return () => {
-       if (cleanup) clearInterval(cleanup);
-    }
+      if (cleanup) clearInterval(cleanup);
+    };
   }, [dispatch, level]);
   return null;
-}
+};
 
 export default MoveOnInterval;
