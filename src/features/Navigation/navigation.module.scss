@@ -1,15 +1,15 @@
 .nav {
-  $size: clamp(1rem, 8vw, 3rem);
+  $size: clamp(1rem, 12vw, 5rem);
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-direction: row;
-  column-gap: 4rem;
+  column-gap: 3rem;
 
   .nav__controls {
     display: grid;
-    column-gap: 0.5rem;
-    row-gap: 0.5rem;
+    column-gap: 0.7rem;
+    row-gap: 0.7rem;
     width: min-content;
     grid-template-areas:
       '. up .'
