@@ -59,10 +59,6 @@ function createCustomStore<Store>(initialStateFromCreate: Store) {
       throw new Error('Store not found');
     }
 
-    // TODO: try to use React Hook instead of useEffect and useState
-    // const state = useSyncExternalStore(store.subscribe, () =>
-    //   selector(store.get()),
-    // );
     const [state, setState] = useState(selector(store.get()));
 
     useEffect(() => {
