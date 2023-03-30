@@ -1,0 +1,24 @@
+.game-over {
+  background-color: var(--clr-bg);
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 100vw;
+  height: 100vh;
+  font-size: 2rem;
+  display: flex;
+  flex-direction: column;
+  row-gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Monoton', cursive;
+  button {
+    background-color: var(--clr-dark);
+    color: var(--clr-light);
+    border: 2px solid var(--clr-dark);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    text-transform: uppercase;
+  }
+}

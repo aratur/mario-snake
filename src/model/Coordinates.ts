@@ -1,2 +1,1 @@
-type Coordinates = { column: number, row: number};
-export default Coordinates;
+export type Coordinates = { x: number; y: number };

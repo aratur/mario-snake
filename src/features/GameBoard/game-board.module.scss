@@ -1,0 +1,15 @@
+.game-board {
+  .game-board__row {
+    $size: clamp(1rem, 7vw, 3rem);
+    display: flex;
+    flex-direction: row;
+    span,
+    img {
+      width: $size;
+      height: $size;
+    }
+    img[alt='isBrick'] {
+      background-color: var(--clr-dark);
+    }
+  }
+}
