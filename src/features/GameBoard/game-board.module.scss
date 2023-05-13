@@ -1,6 +1,6 @@
 .game-board {
   .game-board__row {
-    $size: clamp(1rem, 7vw, 3rem);
+    $size: clamp(1rem, 7vw, 2.5rem);
     display: flex;
     flex-direction: row;
     span,
