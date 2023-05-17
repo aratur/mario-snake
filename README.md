@@ -1,7 +1,6 @@
 # Snake-Mario game
 
-This is an implementation of a classic snake game.
-Project consists of a custom implementation of a global store and is focused on limiting React renders.
+A classic snake game with art from Mario. Project includes a custom implementation of a global store (using useRef and useContext) at the same time keeps the number of React re-renders to minimum.
 U can see these updates with React DevTools and enabled option _Highlight updates when components render_
 
 ## Table of contents
@@ -50,10 +49,11 @@ To start the project locally go tot the the project directory and run `pnpm run 
 ### Built with
 
 - [React](https://reactjs.org/)
-- [React Testing Library](https://testing-library.com/docs/)
-- [React Router](https://reactrouter.com/en/main)
+- [TypeScript](https://www.typescriptlang.org/)
 - [Vite](https://vitejs.dev/)
 - [Vitest](https://vitest.dev/)
+- [React Testing Library](https://testing-library.com/docs/)
+- custom state using useContext and useRef
 
 ## Author
 
